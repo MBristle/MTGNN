@@ -22,6 +22,7 @@
 \documentclass[letterpaper,twocolumn,11pt]{article}
 \usepackage{usenix,epsfig,endnotes}
 \usepackage{natbib}
+\usepackage{amsmath}
 \begin{document}
 
 
@@ -56,25 +57,57 @@ The applicability of time series prediction can be found in several domains such
 
 
 
-This is citing  \cite{wu2020connecting}
+This is citing \cite{wu2020connecting}
 
 
 \section{Methodical Background}
-The corrent report can be placed in the methodical perspective of time series forecasting while on the other hand using
+The current report can be placed in the methodical perspective of time series forecasting while on the other hand using
 taking advantage of the more recently developed toolbox of graph neural networks (GNN).
-\subsection{Time series forecasting}
+\subsection{Multivariate Time series forecasting (MTSF)}
+Time series forecasting has a long history [tbc].
+
+\textbf{ARIMA} ...
+
+\textbf{RNN} ...
+
+\textbf{LSTM}  ...
 
 \subsection{Graph neural networks}
 
 \section{MTGNN: Connecting the Dots}
+In the paper of Wu et al. \cite{wu2020connecting} two major challenges concerning the combination of GNN and multivariate
+time series forecasting are addressed.
+The graph structure in MTSF represents the relation between the different temporal features.
+A major issue is, that without prior knowledge, the relation between these features is unknown.
+Further does the graph structure differ between different data sets, what makes it impossible to have a full end-to-end framework that adjusts to the properties of the graph.
+The second challenge addresses the issue that a previously learned or explicitly supplied graph structure might not be optimal and thus,
+should be updated during the learning process.
+A step, most previously published GNNs leave a side, while focusing only on message passing.
 
 \subsection{Formulating the Problem}
-\subsection{Architectual overview}
-\subsection{Graph Learning}
-\subsection{Graph Concolution Module}
-\subsection{Temporal Concolution Module}
-\subsection{The learning Algorithm}
+A $N$ dimensional multivariate timeseries consists of a serie of steps in time $z_t \in R^N$, with $z_t[i] \in R$
+being the $i^{th}$ - variable at time step $t$. The obejctive is to predict either a Q-step-way value
+$Y = \{z_{t_{P+Q}}\}$ or a sequence of M values $Y = \{z_{t_{P+1}}, z_{t_{P+2}},\dots,z_{t_{P+M}}\}$
+from a past time series with $P$ steps $X = \{z_{t_{1}}, z_{t_{2}},\dots,z_{t_{P}}\}$.
 
+The P past steps  $\Chi = {S_{t_1}, S_{t_2}, \dots, S_{t_P}}$ can be supplemented by $D$ auxiliary features s.d. the $i_{th}$-step
+$S_{t_i} \in R^{1+D}$ has $z_t[i]$ as the first column, followed by the auxiliary features.
+
+The objective is to minimize the loss of the the mapping $f: \chi \rightarrow Y$ with $l2$-regularization. [tbc]
+\subsection{Architectual overview}
+The authors propose three major components to address the challenges. To attack the first challenge a new graph learning layer
+is introduced. The goal is to extract a first proposal of the interconnectedness of the features. The output of the model is a sparse adjacency matrix based on the supplied training data.
+Based on the graph learning layer, the spacial dependencies among the features are learned in an graph convolution module to address the over-smoothing problem [describe -> directed graphs].
+In the temporal convolution module the temporal patterns with different frequency and length should caught with a customized 1D convolution.
+
+\subsection{Graph Learning Layer}
+[x]
+\subsection{Graph Concolution Module}
+[x]
+\subsection{Temporal Concolution Module}
+[x]
+\subsection{The learning Algorithm}
+[x]
 \section{Experimental evaluation}
 
 \section{Replication Experiments}
