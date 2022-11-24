@@ -1,0 +1,9 @@
+data/
+.idea/
+out/
+venv*/
+*.pt
+*.log
+*.npz
+*.h5
+
