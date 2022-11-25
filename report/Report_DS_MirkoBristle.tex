@@ -19,26 +19,27 @@
 % foot of page notes, don't include the endnotes package in the 
 % usepackage command, below.
 
-\documentclass[letterpaper,twocolumn,11pt]{article}
+\documentclass[letterpaper,twocolumn,12pt]{article}
 \usepackage{usenix,epsfig,endnotes}
 \usepackage{natbib}
 \usepackage{amsmath}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
 \begin{document}
 
 
-
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
-\title{\Large \bf Multivariate Time Series Forecasting with Graph Neural Networks \\
- \Medium \it Data Science Seminar
-}
+    \title{\Large \bf Multivariate Time Series Forecasting with Graph Neural Networks \\
+    \Medium \it A Report for the Data Science Seminar
+    }
 
-\author{
-{\rm Mirko Bristle, 14-109-576}\\
-    University of Bern \\
-    \\
-    \today
-}
-\maketitle
+    \author{
+            {\rm Mirko Bristle, 14-109-576}\\
+        University of Fribourg \\
+        \\
+        \today
+    }
+    \maketitle
 
 % Use the following at camera-ready time to suppress page numbers.
 % Comment it out when you first submit the paper for review.
@@ -49,91 +50,141 @@
 %Your Abstract Text Goes Here.  Just a few facts.
 %Whet our appetites.
 
-\section{Introduction}
 
-Prediction of time series has a strong history with nevertheless current importance. With the rise of IoT devices, and a substancial
-increase in information gathering in a wide variaty of domains the bases for the current state of the art time series forcasting was laid.
-The applicability of time series prediction can be found in several domains such as finance, electricity markets, but also several fields in science [tbc].
+    \section{Introduction}
 
-
-
-This is citing \cite{wu2020connecting}
+    Prediction of time series has a strong history with nevertheless current importance. With the rise of IoT devices, and a substancial
+    increase in information gathering in a wide variaty of domains the bases for the current state of the art time series forcasting was laid.
+    The applicability of time series prediction can be found in several domains such as finance, electricity markets, but also several fields in science [tbc].
 
 
-\section{Methodical Background}
-The current report can be placed in the methodical perspective of time series forecasting while on the other hand using
-taking advantage of the more recently developed toolbox of graph neural networks (GNN).
-\subsection{Multivariate Time series forecasting (MTSF)}
-Time series forecasting has a long history [tbc].
-
-\textbf{ARIMA} ...
-
-\textbf{RNN} ...
-
-\textbf{LSTM}  ...
-
-\subsection{Graph neural networks}
-
-\section{MTGNN: Connecting the Dots}
-In the paper of Wu et al. \cite{wu2020connecting} two major challenges concerning the combination of GNN and multivariate
-time series forecasting are addressed.
-The graph structure in MTSF represents the relation between the different temporal features.
-A major issue is, that without prior knowledge, the relation between these features is unknown.
-Further does the graph structure differ between different data sets, what makes it impossible to have a full end-to-end framework that adjusts to the properties of the graph.
-The second challenge addresses the issue that a previously learned or explicitly supplied graph structure might not be optimal and thus,
-should be updated during the learning process.
-A step, most previously published GNNs leave a side, while focusing only on message passing.
-
-\subsection{Formulating the Problem}
-A $N$ dimensional multivariate timeseries consists of a serie of steps in time $z_t \in R^N$, with $z_t[i] \in R$
-being the $i^{th}$ - variable at time step $t$. The obejctive is to predict either a Q-step-way value
-$Y = \{z_{t_{P+Q}}\}$ or a sequence of M values $Y = \{z_{t_{P+1}}, z_{t_{P+2}},\dots,z_{t_{P+M}}\}$
-from a past time series with $P$ steps $X = \{z_{t_{1}}, z_{t_{2}},\dots,z_{t_{P}}\}$.
-
-The P past steps  $\Chi = {S_{t_1}, S_{t_2}, \dots, S_{t_P}}$ can be supplemented by $D$ auxiliary features s.d. the $i_{th}$-step
-$S_{t_i} \in R^{1+D}$ has $z_t[i]$ as the first column, followed by the auxiliary features.
-
-The objective is to minimize the loss of the the mapping $f: \chi \rightarrow Y$ with $l2$-regularization. [tbc]
-\subsection{Architectual overview}
-The authors propose three major components to address the challenges. To attack the first challenge a new graph learning layer
-is introduced. The goal is to extract a first proposal of the interconnectedness of the features. The output of the model is a sparse adjacency matrix based on the supplied training data.
-Based on the graph learning layer, the spacial dependencies among the features are learned in an graph convolution module to address the over-smoothing problem [describe -> directed graphs].
-In the temporal convolution module the temporal patterns with different frequency and length should caught with a customized 1D convolution.
-
-\subsection{Graph Learning Layer}
-[x]
-\subsection{Graph Concolution Module}
-[x]
-\subsection{Temporal Concolution Module}
-[x]
-\subsection{The learning Algorithm}
-[x]
-\section{Experimental evaluation}
-
-\section{Replication Experiments}
-
-\subsection{Method of replication}
-
-\subsection{Results}
-
-\section{Discussion}
-\subsection{Integreation of Evaluation and Replication}
-\subsection{Contribution to time series forecasting}
-\subsection{Critique}
-\subsection{Future research}
-
-{\footnotesize \bibliographystyle{acm}
-\bibliography{bibliography}}
+    This is citing \cite{wu2020connecting}
 
 
-\theendnotes
+    \section{Methodical Background}
+    The current report can be placed in the methodical perspective of time series forecasting while on the other hand using
+    taking advantage of the more recently developed toolbox of graph neural networks (GNN).
+
+    \subsection{Multivariate Time series forecasting (MTSF)}
+    Time series forecasting has a long history [tbc].
+
+    \textbf{ARIMA} ...
+
+    \textbf{GP} ...
+
+    \textbf{RNN} ...
+
+    \textbf{LSTM}  ...
+
+    \subsection{Graph neural networks}
+
+
+    \section{MTGNN: Connecting the Dots}
+    In the paper of Wu et al. \cite{wu2020connecting} two major challenges concerning the combination of GNN and multivariate
+    time series forecasting are addressed.
+    The graph structure in MTSF represents the relation between the different temporal features.
+    A major issue is, that without prior knowledge, the relation between these features is unknown.
+    Further does the graph structure differ between different data sets, what makes it impossible to have a full end-to-end framework that adjusts to the properties of the graph.
+    The second challenge addresses the issue that a previously learned or explicitly supplied graph structure might not be optimal and thus,
+    should be updated during the learning process.
+    A step, most previously published GNNs leave a side, while focusing only on message passing.
+
+    \subsection{Formulating the Problem}
+    A $N$ dimensional multivariate timeseries consists of a serie of steps in time $z_t \in R^N$, with $z_t[i] \in R$
+    being the $i^{th}$ - variable at time step $t$. The obejctive is to predict either a Q-step-away value
+    $Y = \{z_{t_{P+Q}}\}$ or a sequence of M values $Y = \{z_{t_{P+1}}, z_{t_{P+2}},\dots,z_{t_{P+M}}\}$
+    from a past time series with $P$ steps $X = \{z_{t_{1}}, z_{t_{2}},\dots,z_{t_{P}}\}$.
+
+    The P past steps  $\Chi = {S_{t_1}, S_{t_2}, \dots, S_{t_P}}$ can be supplemented by $D$ auxiliary features s.d. the $i_{th}$-step
+    $S_{t_i} \in R^{N+D}$ has $z_t[i]$ as the first column, followed by the auxiliary features.
+
+    The objective is to minimize the loss of the the mapping $f: \chi \rightarrow Y$ with $L2$-regularization.
+
+    Let $G$ be a graph consisting of nodes $V$ and edges $E$, then formally $G=(V,E)$. The vertice $v \in V$ can be
+    interpreted as the $i^{th}$ - variable $z_t[i]$. Thus, the number of nodes in $G$ can be described with $N$.
+    Further, $e = (u,v)$ represents an edge from node $u$ to node $v$, what represents the relation between the nodes.
+
+    The Node Neighborhood of a node $v \in V$ can then be described as $N(v) = \{u \in V| (u,v) \in E\}$.
+    The relationship of the nodes and with that the existence of edges between every two nodes $v_i,v_j \in G$
+    can be described in a adjacency Matrix $A \in R^{N\timesN}$ by
+    having  $A_{ij} = c > 0$ if $(v_i,v_j) \in E$. If there is no edge $(v_i,v_j) \notin E$ we write $Aij = 0$.
+
+    \subsection{Architectual overview}
+    The authors propose three major components to address the challenges. To attack the first challenge a new graph learning layer
+    is introduced. The goal is to extract a first proposal of the interconnectedness of the features. The output of the model is a sparse adjacency matrix based on the supplied training data.
+    Based on the graph learning layer, the spacial dependencies among the features are learned in an graph convolution module to address the over-smoothing problem [describe -> directed graphs].
+    In the temporal convolution module the temporal patterns with different frequency and length should caught with a customized 1D convolution.
+
+    \subsection{Graph Learning Layer}
+    When trying to take the relationships of different variables of a time series into account, one encounters two major issues.
+    First, suppose the graph $G$ is a directed graph and thus $(u,v)\in E$ might differ from $(v,u)\in E$,
+    then calculating the full adjacency matrix by a common distance metric as the the euclidean distance results in time and space complexity of $O(N^2)$.
+    With such an approach, forecasting a time series with a high number of dimensions is nearly impossible.
+
+    Having a directed graph with a potentially asymmetric adjacency matrix is not far-fetched.
+    In practice, having a node being influenced by an other node but not vice versa can easily be observed by the phenomenon of traffic flow.
+    More generally, any signal flowing over a net of nodes over time will lead to uni-directed relations.
+    Perpendicularly, most distance metrics lead to a symmetric adjacency matrix as they are mostly bi-directional.
+
+    To address these issues the authors propose a method to extract uni-directional relationships in combination with restricting the sampling
+    to only a subset of nodes for each mini-batch to alleviate the time and space complexity.
+
+    For two learnable nodes $E_i, E_j$ the uni-directional relation is calculated as
+    \begin{algorithm}
+        \scriptsize
+        \begin{alignat}{1}
+            M_i &= \tanh (\alpha E_i \Theta_i) \\
+            M_j &= \tanh (\alpha E_j \Theta_j)  \\
+            A_{ij} &= ReLU(\tanh (\alpha(M_i M_j^T - M_j M_i^T))) \label{eq:adjacency_matrix}
+        \end{alignat}
+        \caption{Algorithm: argtopk}\label{alg:argtopk}
+        \begin{algorithmic}[1]
+            \For{n = 1,2, \dots, N}
+                \State $idx \gets argtopk(A[n,:], 1)$
+                \State $A[n, -idx] \gets 0$
+            \EndFor
+        \end{algorithmic}
+    \end{algorithm}
+    where the saturation-rate [explain] is controlled by the hyper-parameter $\alpha$ and  $\Theta_i, \Theta_j$ represent
+    model parameters. The adjacency matrix $A$ is regularized by the equation \ref{eq:adjacency_matrix}
+    by setting the negative counterpart of a  positive valued cell $A_{ij}$ to $A_{ji} = 0$. In the algorithm argtopk \ref{alg:argtopk}
+    all
+
+
+    \subsection{Graph Concolution Module}
+    [x]
+    \subsection{Temporal Concolution Module}
+    [x]
+    \subsection{The learning Algorithm}
+    [x]
+
+
+    \section{Experimental evaluation}
+
+
+    \section{Replication Experiments}
+
+    \subsection{Method of replication}
+
+    \subsection{Results}
+
+
+    \section{Discussion}
+
+    \subsection{Integreation of Evaluation and Replication}
+
+    \subsection{Contribution to time series forecasting}
+
+    \subsection{Critique}
+    \subsection{Future research}
+
+    {\footnotesize \bibliographystyle{acm}
+    \bibliography{bibliography}}
+
+
+    \theendnotes
 
 \end{document}
-
-
-
-
-
 
 
 %A paragraph of text goes here.  Lots of text.  Plenty of interesting
