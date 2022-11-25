@@ -130,13 +130,13 @@
     to only a subset of nodes for each mini-batch to alleviate the time and space complexity.
 
     For two learnable nodes $E_i, E_j$ the uni-directional relation is calculated as
+
+    \begin{alignat}{1}
+        M_i &= \tanh (\alpha E_i \Theta_i) \\
+        M_j &= \tanh (\alpha E_j \Theta_j)  \\
+        A_{ij} &= ReLU(\tanh (\alpha(M_i M_j^T - M_j M_i^T))) \label{eq:adjacency_matrix}
+    \end{alignat}
     \begin{algorithm}
-        \scriptsize
-        \begin{alignat}{1}
-            M_i &= \tanh (\alpha E_i \Theta_i) \\
-            M_j &= \tanh (\alpha E_j \Theta_j)  \\
-            A_{ij} &= ReLU(\tanh (\alpha(M_i M_j^T - M_j M_i^T))) \label{eq:adjacency_matrix}
-        \end{alignat}
         \caption{Algorithm: argtopk}\label{alg:argtopk}
         \begin{algorithmic}[1]
             \For{n = 1,2, \dots, N}
@@ -147,12 +147,37 @@
     \end{algorithm}
     where the saturation-rate [explain] is controlled by the hyper-parameter $\alpha$ and  $\Theta_i, \Theta_j$ represent
     model parameters. The adjacency matrix $A$ is regularized by the equation \ref{eq:adjacency_matrix}
-    by setting the negative counterpart of a  positive valued cell $A_{ij}$ to $A_{ji} = 0$. In the algorithm argtopk \ref{alg:argtopk}
-    all
+    by setting the negative counterpart of a positive valued cell $A_{ij}$ to $A_{ji} = 0$. In the algorithm argtopk \ref{alg:argtopk}
+    all weights apart from the top k are set to 0 for each node.
+    This means we keep only the edges between the node and its top k neighbors and make the adjacency matrix thus sparse to improve the computation in the graph convolution module.
 
+    This in an attempt to have a flexible way fo learning stable and interpretable features during training and can still be updatable by new training data after the online training process.
+    The authors refrained to update the weights dynamically over time as this prevents the model from convergence.
+    To benefit from external knowledge about the graph structure of the model, it is possible to add a static node feature matrix $Z$
+    which is then used to calculate the adjacency matrix with $E_1 =  E_2 = Z $.
 
     \subsection{Graph Concolution Module}
-    [x]
+    In the so called graph convolutional module the authors try to integrate information about the node neighbors by introducing a mix-hop layer.
+    The issue of integrating spacial information such as the relation between the nodes has been studied [TODO read and elaborate 9,2].
+    The key goal of the mix-hop layer is to integrating the information of different neighbors of different distances by compromising on time and space complexity \cite{AbuElHaija}.
+    A difficulty well know is the potentially negative impact on the performance of hops at a higher levels of the signal stream.
+    The authors tackled the issue by introducing an improved version of the mix-propagation layer that functions in an information propagation step and a information selection step.
+    The information propagation step defines the $k-th$ hop with $A$ being the adjaceny matrix as
+    \begin{alignat}{1}
+        H^{(k)} &= \beta H_{in} + (1-\beta) \tilde{A} H^{(k-1)} \label{eq:hop}
+    \end{alignat}
+    where the hidden state input is set as $H^0 = H_{in}$, $\tilde{A} = \tilde{D}^{-1}(A +I)$ with $\tilde{D}_{ii}=1 + \sum_{j}^{K}A_{ij}$.
+    The hyperparameter $\beta$ defines the ratio between the the amount of new information flowing in by the next hop versus the information of the original hidden state input.
+    TODO blabla about propagation
+
+    In a second step the information is selected by the parameter matrix $W^{k}$ by
+    \begin{equation}
+        \begin{alignat}{1}
+            H_{out} &= \mathlarger{\sum}_{i}^{K} H^i W^i  \label{eq:hop_selection}
+        \end{alignat}
+    \end{equation}
+
+
     \subsection{Temporal Concolution Module}
     [x]
     \subsection{The learning Algorithm}
