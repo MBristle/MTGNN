@@ -157,25 +157,35 @@
     which is then used to calculate the adjacency matrix with $E_1 =  E_2 = Z $.
 
     \subsection{Graph Concolution Module}
-    In the so called graph convolutional module the authors try to integrate information about the node neighbors by introducing a mix-hop layer.
+    In the so called graph convolutional module the authors try to integrate information about the node neighbors by introducing two mix-hop layers.
+
     The issue of integrating spacial information such as the relation between the nodes has been studied [TODO read and elaborate 9,2].
+
     The key goal of the mix-hop layer is to integrating the information of different neighbors of different distances by compromising on time and space complexity \cite{AbuElHaija}.
-    A difficulty well know is the potentially negative impact on the performance of hops at a higher levels of the signal stream.
-    The authors tackled the issue by introducing an improved version of the mix-propagation layer that functions in an information propagation step and a information selection step.
-    The information propagation step defines the $k-th$ hop with $A$ being the adjaceny matrix as
+    More generally the neighborhood aggregation in this step is basically a variant of Laplacian smoothing \cite{leskovec2005graphs}.
+    A well know difficulty is the potentially negative impact of information given by the nodes in higher levels of the signal stream such as the root of the graph.
+    This can be handled by keeping a proportion of the original hidden states while at the same time integrating the information
+    of the node neighborhood.
+    It is also necessary to avoid that the multi layer network reaches the random walk's limit distribution.
+    If not handled, the recursive information propagation along the graph structure converges towards a single point with increasing number of graph convolution layers. \cite{klicpera2018predict}.
+
+    The authors tackled these issues by introducing an improved version of the mix-propagation layer that functions in an
+    information propagation step and a information selection step.
+    The information propagation step defines the $i-th$ hop with $A$ being the adjaceny matrix as
     \begin{alignat}{1}
-        H^{(k)} &= \beta H_{in} + (1-\beta) \tilde{A} H^{(k-1)} \label{eq:hop}
+        H^{(i)} &= \beta H_{in} + (1-\beta) \tilde{A} H^{(i-1)} \label{eq:hop}
     \end{alignat}
     where the hidden state input is set as $H^0 = H_{in}$, $\tilde{A} = \tilde{D}^{-1}(A +I)$ with $\tilde{D}_{ii}=1 + \sum_{j}^{K}A_{ij}$.
     The hyperparameter $\beta$ defines the ratio between the the amount of new information flowing in by the next hop versus the information of the original hidden state input.
-    TODO blabla about propagation
 
-    In a second step the information is selected by the parameter matrix $W^{k}$ by
+    In a second step the information is selected by the parameter matrix $W^{i}$ as following
     \begin{equation}
         \begin{alignat}{1}
             H_{out} &= \mathlarger{\sum}_{i}^{K} H^i W^i  \label{eq:hop_selection}
         \end{alignat}
     \end{equation}
+    In the end one of the two mix-hop layers gets run with the adjacency matrix and the other one with the transposed adjacency matrix.
+    The output of the graph convolution module is then the sum of both mix-hop layers.
 
 
     \subsection{Temporal Concolution Module}
