@@ -23,8 +23,10 @@
 \usepackage{usenix,epsfig,endnotes}
 \usepackage{natbib}
 \usepackage{amsmath}
+\usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
+\usepackage{amsfonts}
 \begin{document}
 
 
@@ -187,11 +189,80 @@
     In the end one of the two mix-hop layers gets run with the adjacency matrix and the other one with the transposed adjacency matrix.
     The output of the graph convolution module is then the sum of both mix-hop layers.
 
-
     \subsection{Temporal Concolution Module}
-    [x]
+    In this step, the goal is to catch temporal information in a set of high level features.
+    Therefor the authors introduce a dilatated inception layer which is executed once with a tangent hyperbolic activation function at the end
+    and a second time with a sigmoid activation function at the end.
+    The goal of the first activation function to act as a filtering mechanism while the latter acts as a gateing function
+    to control the amount of information passed to the next module.
+    The output of the module is the multiplied result of the two layers.
+
+    The dilated inception layer is inspired by two strategies to do temporal 1D convolution.
+    To capture temporal patterns of different lengths filtering with kernels of different sizes were used.
+    Secondly, to capture long time sequences a dilated convolution strategy was used.
+    This acts as if the kernel is extended leaving out samples and thus it is able to be sensitive to longer time sequences \cite{xi2018deep}.
+
+    The first strategy was strongly inspired by image processing.
+    Applied to the 1 dimensional temporal convolution problem, the authors identified the filtering sizes of 7, 12,24,24,28,60
+    as the major lengths regarding cycling events in time series.
+    All these cycles can be described by stacking of multiple inception layers of size $1 \times 2$,$1 \times 3$,$1 \times 6$,$1 \times 7$.
+
+    The dilated convolution addresses the issue of the receptive field size to be linear depending on the number of convolutional layers $m$ and the size of the kernel $c$.
+    The receptive field describes the window of a time series input that can as maximum taken into account to extract temporal patterns.
+    Without this strategy the receptive field $R$ is determend by
+    \begin{equation}
+        \begin{alignat}{1}
+            R &= 1 + m(c-1)  \label{eq:receptive_field}
+        \end{alignat}
+    \end{equation}
+    In order to have a big receptive field, Szegedy et al. \cite{Szegedy_2015_CVPR} point out that the computational budget poses a major bottleneck.
+    Inspired by this paper, the authors introduced a down-sampled version of the dilated convolution.
+    A dilation factor $d$ refers to the number of samples skipped, eg. $d=3$ refers to taking every third sample of the input in the convolution.
+    By introducing an adaptive dilation factor they are able to letting the receptive field size grow exponentially with respect to the number of hidden layers in the network.
+    Formally, let's consider $q \in \mathbb{R}>1$ as the rate of the exponential growth of the dilation factor for each layer,
+    the receptive field $R$ can be described as
+    \begin{equation}
+        \begin{alignat}{1}
+            R &= 1 + (c-1)(q^m-1)/(q-1).  \label{eq:adaptive_receptive_field}
+        \end{alignat}
+    \end{equation}
+
+    As the last step the concatenation of the inception and dilation was performed such that for a sequence $z \in \mathbb{R}^T$ of length $T$ and the introduced filters
+    $f_{1 \times 2} \in \mathbb{R}^2$,
+    $f_{1 \times 3} \in \mathbb{R}^3$,
+    $f_{1 \times 6} \in \mathbb{R}^6$,
+    $f_{1 \times 7} \in \mathbb{R}^7$,
+    the dilated inception layer is composed by
+    \begin{equation}
+        \begin{alignat}{1}
+            z &= concat(
+            z \star f_{1 \times 2},
+            z \star f_{1 \times 3},
+            z \star f_{1 \times 6},
+            z \star f_{1 \times 7}
+            ).
+            \label{eq:dilated_inception_layer_wrt_z}
+        \end{alignat}
+    \end{equation}
+    where by a dilated convolution of size $k$ for t [TODO FIND OUT WHAT THIS STANDS FOR!] is
+    \begin{equation}
+        \begin{alignat}{1}
+            z \star f_{1 \times k}(t), &= \mathlarger{\sum_{s=0}^{k-1} f_{1 \times k}(s)z(t-d \times s)}
+            \label{eq:dilated_convolution}
+        \end{alignat}
+    \end{equation}
+
+    \subsection{About skip connections and the output module}
+    Skip connection layers should avoid the gradient vanishing problem by introducing a layer after each temporal convolution module.
+    Further, to address the same issue residual connections were introduced to the layer that map from before a temporal convolution module to the next temporal convolution module, skipping one graph convolution module.
+    For the $i-th$ skip connection layer with input size $L_i$ we have  $1 \times L_i$ convolutions and standardizing output to the sequence size 1 [TODO double check in code!].
+    The output is then a standard $ 1 \times 1$ convolution layer with the purpose of reshaping the channels from the inputs and the skipping layers to the desired output dimension.
+
     \subsection{The learning Algorithm}
-    [x]
+
+    \begin{algorithm}
+        \caption{My algorithm}\label{euclid}
+    \end{algorithm}
 
 
     \section{Experimental evaluation}
