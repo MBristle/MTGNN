@@ -19,7 +19,7 @@
 % foot of page notes, don't include the endnotes package in the
 % usepackage command, below.
 
-\documentclass[letterpaper,twocolumn,12pt]{article}
+\documentclass[letterpaper,twocolumn,11pt]{article}
 \usepackage{usenix,epsfig,endnotes}
 \usepackage{natbib}
 \usepackage{amsmath}
@@ -226,9 +226,9 @@
     Formally, let's consider $q \in \mathbb{R}>1$ as the rate of the exponential growth of the dilation factor for each layer,
     the receptive field $R$ can be described as
 
-        \begin{alignat}{1}
-            R &= 1 + (c-1)(q^m-1)/(q-1).  \label{eq:adaptive_receptive_field}
-        \end{alignat}
+    \begin{alignat}{1}
+        R &= 1 + (c-1)(q^m-1)/(q-1).  \label{eq:adaptive_receptive_field}
+    \end{alignat}
 
 
     As the last step, the concatenation of the inception and dilation was performed such that for a sequence $z \in \mathbb{R}^T$ of length $T$ and the introduced filters
@@ -253,7 +253,6 @@
     \begin{equation}
         z \star f_{1 \times k}(t) = \sum_{s=0}^{k-1} f_{1 \times k}(s)z(t-d \times s)
     \end{equation}
-
 
     \subsection{About skip connections and the output module}
     Skip connection layers should avoid the gradient vanishing problem by introducing a layer after each temporal convolution module.
@@ -314,7 +313,58 @@
     So they applied a curriculum learning strategy that only looks at the next step first and then enlarges the scope of the prediction.
     By this, the difficulty of predicting a point far in the future can be reduced.
 
+
     \section{Experimental evaluation}
+    In this section a brief overview of their evaluation of the MTGNN algorithm is given.
+    The authors compared the MTGNN algorithem to a selection of other multi-variate time series models for both single step prediction and predicting a sequence of steps in the future.
+
+    \subsection{single step}
+    For the single step prediction the results were compared based on the root squared error
+    and the empirical correlation $r$.
+    The benchmark datasets consisted out of
+    one traffic datasets (862 nodes, 17544 samples),
+    a solar-energy dataset (137 nodes, 52560 samples),
+    a electricity dataset (321 nodes, 26304 samples),
+    and a exchange-rate dataset (8 nodes, 7588 samples).
+    For each dataset the input length was fixed to 168 samples and the output was one sample.
+    The model was trained with a so called fixed horizon, such that the predicted sample was either 3, 6, 12 or 24 samples in the future.
+    Two versions of the MTGNN model were trained.
+    One with graph sampling and one without.
+    Both were compared against an
+    auto-regressive model (AR),
+    a model consisting out of a multi-layer perceptron combined with a AR called VAR-MLP,
+    a gaussion-process model (GP),
+    a recurrent neural network (RNN-GRU),
+    a long-short-term time series neural network (LSTnet),
+    and deep learning model called TPA-LSTM which introduces a temporal pattern attention mechanism.
+
+    Looking at the results we can observe that for the traffic and the electricity dataset the MTGNN model had the best performance with regards to RSE and CORR for a horizon of 3,12,24.
+    While the MTGNN model with sampling showed the lowest RSE and the highest correlation for a horizon of 6.
+    For the solar-energy dataset the MTGNN model was only excelled by the TPA-LSTM model for the RSME and the CORR for a horizon of 6 and the CORR with a horizon of 24.
+    For the exchange rate the TPA-LSTM showed the best performance for all horizons with regards to the RSE and for the CORR with a horizon of 3.
+    For a horizon of 12, 24 the sampled MTGNN showed the highest CORR while for a horizon of 6 the RNN-GRU outperformed the other models with regards to the CORR.
+
+    \subsection{multistep-prediction}
+    For the comparison of the multistep prediction the mean absolute error (MAE), the root mean square error (RMSE) and the mean absolute percentage error (MAPE) were used as comparison metric.
+    Two spatial-temporal graph neural network datasets were used for model benchmarking and compared against six other graph neural networks.
+    Of relevance is the WaveNet, a network that integrates diffusion graph convolutions with 1D dilated convolutions,
+    MRA-BGCN which is a multi-range atteentive bicomponent graph neural network, and
+    GMAN, a graph neural network with spatial and temporal attention mechanisms.
+    The datasets were the metr-la dataset with 207 nodes and 34272 samples and the pems-bay dataset with 325 nodes and 52116 samples.
+    The input size to all networks was 12 samples and the output was also set to 12 samples.
+    The evaluated horizons were 3, 6, 12.
+
+    The the best performing model for the metr-la dataset for a horizon of 3 were with regards to MAE and RMSE the MRA\_BGCN model, while the MTGNN sampling model showed the lowes MAPE.
+    The MGTNN model performed best in all metrics for the a horizon of 6 and the GMAN model performed best with regards to all metrics for a horizon of 12 steps.
+    For the pems-bay dataset GMAN showed in all metrics the best performance for a horizon of 12 steps, while MRA-BGCNM showed the best performance for a horizon of 3 and 6 for the MAE and the RMSE.
+    The MRA-BGCNM showed also the best performance for the MAPE with a horizon of 6 and the WaveNet model had the lowest MAPE for a horizon of 3.
+
+    \subsection{The ablation study}
+    In order to remove the effectiveness of the components, a ablation study was conducted
+
+
+    \section{Critique}
+
 
 
     \section{Replication Experiments}
