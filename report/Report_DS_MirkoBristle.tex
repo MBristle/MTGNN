@@ -360,16 +360,41 @@
     The MRA-BGCNM showed also the best performance for the MAPE with a horizon of 6 and the WaveNet model had the lowest MAPE for a horizon of 3.
 
     \subsection{The ablation study}
-    In order to remove the effectiveness of the components, a ablation study was conducted
+    In order to remove the effectiveness of the components, a ablation study was conducted, whereby the full trained model was compared to a version without each of the four variations.
+    First the graph convolution module was removed substituted by a linear layer.
+    Secondly the mix-hop propagation layer, where the neighborhood was integrated was bypassed.
+    Third, the inception in the dilated inception layer was replaced by a single 1 x 7 filter.
+    Fourth, the curriculum learning was removed and thus the model was not trained stepwise.
+    Each of the models was trained 10 times and with 50 epochs each.
+    The mean and the standard deviation of the  MAE, RMSE and MAPE was then reported.
 
+    For all of the metrics the full MTGNN model showed the best performance.
+    The authors claim that the model improves significantly by the graph convolution layer and thus makes use of the information flow among the nodes.
+    The mix-hop layer appears to contribute to the information selection in each information propagation step.
+    Further they claim that the inception contributes significantly to the model for the RMSE (although only marginal for MAE).
+    Also teh curriculum learning strategy is claimed to be effective by first converging in an easy task and then step-wise calibrating the parameters.
+
+    \subsection{graph learning layer}
+    The evaluation of the graph learning layer was performed on the metr-la data only and evaluate on the validation set with 10 runs.
+    Their method of constructing the adjacency matrix $A$ called the uni-directed-A was compared to a predefined A, a global - A with $n^2$ parameters, an undirected - A and directed- A represent the similarities of the node embeddings and at last a dynamic - A which takes the temporal change of the nodes into account.
+    Based on the MAE, MAPE and RMSE the uni-directed a method performed significantly better than the other methods.
 
     \section{Critique}
-
+    - not structured evaluation
+    - choice of data sets
+    - no statistics for evaluation
+    - for ablation study not clear which dataset used, parameters
+    - choice of abaltion study - why was what component suspended?
+    - How about synthetic data, the datasets were not characteized with regards to their properties.
+    - interpretatoion is sparse
 
 
     \section{Replication Experiments}
+    In this section some of the results should be replicated and additional experiments will be conducted to get a more concise understand of the MTGNN network.
+    Due to limited computational power some of the experiments are simplified, only calculated on a subset of the data or an independent sample is calculated and compared to the proposed value.
 
     \subsection{Method of replication}
+
 
     \subsection{Results}
 
