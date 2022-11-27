@@ -1,4 +1,4 @@
-% TEMPLATE for Usenix papers, specifically to meet requirements of
+% TEMPLATE for Usenix papers, specifically to meet the requirements of
 %  USENIX '05
 % originally a template for producing IEEE-format articles using LaTeX.
 %   written by Matthew Ward, CS Department, Worcester Polytechnic Institute.
@@ -7,16 +7,16 @@
 % turned into a smartass generic template by De Clarke, with thanks to
 %   both the above pioneers
 % use at your own risk.  Complaints to /dev/null.
-% make it two column with no page numbering, default is 10 point
+% make it two columns with no page numbering, default is 10 point
 
 % Munged by Fred Douglis <douglis@research.att.com> 10/97 to separate
 % the .sty file from the LaTeX source template, so that people can
 % more easily include the .sty file into an existing document.  Also
 % changed to more closely follow the style guidelines as represented
-% by the Word sample file. 
+% by the Word sample file.
 
 % Note that since 2010, USENIX does not require endnotes. If you want
-% foot of page notes, don't include the endnotes package in the 
+% foot of page notes, don't include the endnotes package in the
 % usepackage command, below.
 
 \documentclass[letterpaper,twocolumn,12pt]{article}
@@ -27,8 +27,12 @@
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
 \usepackage{amsfonts}
+\usepackage{amssymb}
 \begin{document}
 
+    \algdef{SE}[SUBALG]{Indent}{EndIndent}{}{\algorithmicend\ }%
+    \algtext*{Indent}
+    \algtext*{EndIndent}
 
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
     \title{\Large \bf Multivariate Time Series Forecasting with Graph Neural Networks \\
@@ -55,9 +59,9 @@
 
     \section{Introduction}
 
-    Prediction of time series has a strong history with nevertheless current importance. With the rise of IoT devices, and a substancial
-    increase in information gathering in a wide variaty of domains the bases for the current state of the art time series forcasting was laid.
-    The applicability of time series prediction can be found in several domains such as finance, electricity markets, but also several fields in science [tbc].
+    Prediction of time series has a strong history with nevertheless current importance. With the rise of IoT devices, and a substantial
+    increase in information gathering in a wide variety of domains the bases for the current state-of-the-art time series forecasting was laid.
+    The applicability of time series prediction can be found in several domains such as finance, and electricity markets, but also several fields in science [tbc].
 
 
     This is citing \cite{wu2020connecting}
@@ -83,48 +87,48 @@
 
     \section{MTGNN: Connecting the Dots}
     In the paper of Wu et al. \cite{wu2020connecting} two major challenges concerning the combination of GNN and multivariate
-    time series forecasting are addressed.
+    time series forecasting is addressed.
     The graph structure in MTSF represents the relation between the different temporal features.
-    A major issue is, that without prior knowledge, the relation between these features is unknown.
+    A major issue is, that without prior knowledge, the relationship between these features is unknown.
     Further does the graph structure differ between different data sets, what makes it impossible to have a full end-to-end framework that adjusts to the properties of the graph.
     The second challenge addresses the issue that a previously learned or explicitly supplied graph structure might not be optimal and thus,
     should be updated during the learning process.
-    A step, most previously published GNNs leave a side, while focusing only on message passing.
+    A step, most previously published GNNs leave aside, while focusing only on message passing.
 
     \subsection{Formulating the Problem}
-    A $N$ dimensional multivariate timeseries consists of a serie of steps in time $z_t \in R^N$, with $z_t[i] \in R$
-    being the $i^{th}$ - variable at time step $t$. The obejctive is to predict either a Q-step-away value
+    A $N$ dimensional multivariate time series consists of a series of steps in time $z_t \in R^N$, with $z_t[i] \in R$
+    being the $i^{th}$ - variable at time step $t$. The objective is to predict either a Q-step-away value
     $Y = \{z_{t_{P+Q}}\}$ or a sequence of M values $Y = \{z_{t_{P+1}}, z_{t_{P+2}},\dots,z_{t_{P+M}}\}$
     from a past time series with $P$ steps $X = \{z_{t_{1}}, z_{t_{2}},\dots,z_{t_{P}}\}$.
 
-    The P past steps  $\Chi = {S_{t_1}, S_{t_2}, \dots, S_{t_P}}$ can be supplemented by $D$ auxiliary features s.d. the $i_{th}$-step
+    The P past steps  $\mathbb{X} = {S_{t_1}, S_{t_2}, \dots, S_{t_P}}$ can be supplemented by $D$ auxiliary features s.d. the $i_{th}$-step
     $S_{t_i} \in R^{N+D}$ has $z_t[i]$ as the first column, followed by the auxiliary features.
 
-    The objective is to minimize the loss of the the mapping $f: \chi \rightarrow Y$ with $L2$-regularization.
+    The objective is to minimize the loss of the mapping $f: \chi \rightarrow Y$ with $L2$-regularization.
 
-    Let $G$ be a graph consisting of nodes $V$ and edges $E$, then formally $G=(V,E)$. The vertice $v \in V$ can be
+    Let $G$ be a graph consisting of nodes $V$ and edges $E$, then formally $G=(V, E)$. The vertice $v \in V$ can be
     interpreted as the $i^{th}$ - variable $z_t[i]$. Thus, the number of nodes in $G$ can be described with $N$.
-    Further, $e = (u,v)$ represents an edge from node $u$ to node $v$, what represents the relation between the nodes.
+    Further, $e = (u,v)$ represents an edge from node $u$ to node $v$, which represents the relation between the nodes.
 
     The Node Neighborhood of a node $v \in V$ can then be described as $N(v) = \{u \in V| (u,v) \in E\}$.
     The relationship of the nodes and with that the existence of edges between every two nodes $v_i,v_j \in G$
-    can be described in a adjacency Matrix $A \in R^{N\timesN}$ by
+    can be described in a adjacency Matrix $A \in R^{N\times N}$ by
     having  $A_{ij} = c > 0$ if $(v_i,v_j) \in E$. If there is no edge $(v_i,v_j) \notin E$ we write $Aij = 0$.
 
     \subsection{Architectual overview}
     The authors propose three major components to address the challenges. To attack the first challenge a new graph learning layer
     is introduced. The goal is to extract a first proposal of the interconnectedness of the features. The output of the model is a sparse adjacency matrix based on the supplied training data.
-    Based on the graph learning layer, the spacial dependencies among the features are learned in an graph convolution module to address the over-smoothing problem [describe -> directed graphs].
-    In the temporal convolution module the temporal patterns with different frequency and length should caught with a customized 1D convolution.
+    Based on the graph learning layer, the spacial dependencies among the features are learned in a graph convolution module to address the over-smoothing problem [describe -> directed graphs].
+    In the temporal convolution module, the temporal patterns with different frequencies and lengths should be caught with a customized 1D convolution.
 
     \subsection{Graph Learning Layer}
     When trying to take the relationships of different variables of a time series into account, one encounters two major issues.
     First, suppose the graph $G$ is a directed graph and thus $(u,v)\in E$ might differ from $(v,u)\in E$,
-    then calculating the full adjacency matrix by a common distance metric as the the euclidean distance results in time and space complexity of $O(N^2)$.
+    then calculating the full adjacency matrix by a common distance metric as the euclidean distance results in time and space complexity of $O(N^2)$.
     With such an approach, forecasting a time series with a high number of dimensions is nearly impossible.
 
     Having a directed graph with a potentially asymmetric adjacency matrix is not far-fetched.
-    In practice, having a node being influenced by an other node but not vice versa can easily be observed by the phenomenon of traffic flow.
+    In practice, having a node being influenced by another node but not vice versa can easily be observed by the phenomenon of traffic flow.
     More generally, any signal flowing over a net of nodes over time will lead to uni-directed relations.
     Perpendicularly, most distance metrics lead to a symmetric adjacency matrix as they are mostly bi-directional.
 
@@ -147,123 +151,168 @@
             \EndFor
         \end{algorithmic}
     \end{algorithm}
-    where the saturation-rate [explain] is controlled by the hyper-parameter $\alpha$ and  $\Theta_i, \Theta_j$ represent
+    where the saturation rate [explain] is controlled by the hyper-parameter $\alpha$ and  $\Theta_i, \Theta_j$ represent
     model parameters. The adjacency matrix $A$ is regularized by the equation \ref{eq:adjacency_matrix}
     by setting the negative counterpart of a positive valued cell $A_{ij}$ to $A_{ji} = 0$. In the algorithm argtopk \ref{alg:argtopk}
     all weights apart from the top k are set to 0 for each node.
     This means we keep only the edges between the node and its top k neighbors and make the adjacency matrix thus sparse to improve the computation in the graph convolution module.
 
-    This in an attempt to have a flexible way fo learning stable and interpretable features during training and can still be updatable by new training data after the online training process.
+    This is an attempt to have a flexible way of learning stable and interpretable features during training and can still be updatable by new training data after the online training process.
     The authors refrained to update the weights dynamically over time as this prevents the model from convergence.
     To benefit from external knowledge about the graph structure of the model, it is possible to add a static node feature matrix $Z$
     which is then used to calculate the adjacency matrix with $E_1 =  E_2 = Z $.
 
     \subsection{Graph Concolution Module}
-    In the so called graph convolutional module the authors try to integrate information about the node neighbors by introducing two mix-hop layers.
+    In the so-called graph convolutional module, the authors try to integrate information about the node neighbors by introducing two mix-hop layers.
 
-    The issue of integrating spacial information such as the relation between the nodes has been studied [TODO read and elaborate 9,2].
+    The issue of integrating spatial information such as the relation between the nodes has been studied [TODO read and elaborate 9,2].
 
     The key goal of the mix-hop layer is to integrating the information of different neighbors of different distances by compromising on time and space complexity \cite{AbuElHaija}.
     More generally the neighborhood aggregation in this step is basically a variant of Laplacian smoothing \cite{leskovec2005graphs}.
-    A well know difficulty is the potentially negative impact of information given by the nodes in higher levels of the signal stream such as the root of the graph.
+    A well-known difficulty is the potentially negative impact of information given by the nodes in higher levels of the signal stream such as the root of the graph.
     This can be handled by keeping a proportion of the original hidden states while at the same time integrating the information
     of the node neighborhood.
-    It is also necessary to avoid that the multi layer network reaches the random walk's limit distribution.
-    If not handled, the recursive information propagation along the graph structure converges towards a single point with increasing number of graph convolution layers. \cite{klicpera2018predict}.
+    It is also necessary to avoid the multi-layer network reaching the random walk's limit distribution.
+    If not handled, the recursive information propagation along the graph structure converges towards a single point with an increasing number of graph convolution layers. \cite{klicpera2018predict}.
 
     The authors tackled these issues by introducing an improved version of the mix-propagation layer that functions in an
-    information propagation step and a information selection step.
-    The information propagation step defines the $i-th$ hop with $A$ being the adjaceny matrix as
+    information propagation step and an information selection step.
+    The information propagation step defines the $i-th$ hop with $A$ being the adjacency matrix as
     \begin{alignat}{1}
         H^{(i)} &= \beta H_{in} + (1-\beta) \tilde{A} H^{(i-1)} \label{eq:hop}
     \end{alignat}
     where the hidden state input is set as $H^0 = H_{in}$, $\tilde{A} = \tilde{D}^{-1}(A +I)$ with $\tilde{D}_{ii}=1 + \sum_{j}^{K}A_{ij}$.
-    The hyperparameter $\beta$ defines the ratio between the the amount of new information flowing in by the next hop versus the information of the original hidden state input.
+    The hyperparameter $\beta$ defines the ratio between the amount of new information flowing in by the next hop versus the information of the original hidden state input.
 
-    In a second step the information is selected by the parameter matrix $W^{i}$ as following
+    In the second step the information is selected by the parameter matrix $W^{i}$ as follows
+
     \begin{equation}
-        \begin{alignat}{1}
-            H_{out} &= \mathlarger{\sum}_{i}^{K} H^i W^i  \label{eq:hop_selection}
-        \end{alignat}
+        H_{out} =\sum_{i}^{K} H^i W^i  \label{eq:hop_selection}
     \end{equation}
-    In the end one of the two mix-hop layers gets run with the adjacency matrix and the other one with the transposed adjacency matrix.
+
+    In the end, one of the two mix-hop layers gets to run with the adjacency matrix and the other one with the transposed adjacency matrix.
     The output of the graph convolution module is then the sum of both mix-hop layers.
 
     \subsection{Temporal Concolution Module}
-    In this step, the goal is to catch temporal information in a set of high level features.
-    Therefor the authors introduce a dilatated inception layer which is executed once with a tangent hyperbolic activation function at the end
+    In this step, the goal is to catch temporal information in a set of high-level features.
+    Therefore the authors introduce a dilatated inception layer which is executed once with a tangent hyperbolic activation function at the end
     and a second time with a sigmoid activation function at the end.
-    The goal of the first activation function to act as a filtering mechanism while the latter acts as a gateing function
+    The goal of the first activation function is to act as a filtering mechanism while the latter acts as a gating function
     to control the amount of information passed to the next module.
     The output of the module is the multiplied result of the two layers.
 
     The dilated inception layer is inspired by two strategies to do temporal 1D convolution.
     To capture temporal patterns of different lengths filtering with kernels of different sizes were used.
-    Secondly, to capture long time sequences a dilated convolution strategy was used.
+    Secondly, to capture long-time sequences a dilated convolution strategy was used.
     This acts as if the kernel is extended leaving out samples and thus it is able to be sensitive to longer time sequences \cite{xi2018deep}.
 
     The first strategy was strongly inspired by image processing.
-    Applied to the 1 dimensional temporal convolution problem, the authors identified the filtering sizes of 7, 12,24,24,28,60
+    Applied to the 1-dimensional temporal convolution problem, the authors identified the filtering sizes of 7, 12,24,24,28,60
     as the major lengths regarding cycling events in time series.
-    All these cycles can be described by stacking of multiple inception layers of size $1 \times 2$,$1 \times 3$,$1 \times 6$,$1 \times 7$.
+    All these cycles can be described by stacking multiple inception layers of size $1 \times 2$,$1 \times 3$,$1 \times 6$,$1 \times 7$.
 
-    The dilated convolution addresses the issue of the receptive field size to be linear depending on the number of convolutional layers $m$ and the size of the kernel $c$.
-    The receptive field describes the window of a time series input that can as maximum taken into account to extract temporal patterns.
-    Without this strategy the receptive field $R$ is determend by
-    \begin{equation}
-        \begin{alignat}{1}
-            R &= 1 + m(c-1)  \label{eq:receptive_field}
-        \end{alignat}
-    \end{equation}
+    The dilated convolution addresses the issue of the receptive field size being linear depending on the number of convolutional layers $m$ and the size of the kernel $c$.
+    The receptive field describes the window of a time series input that can as maximum is taken into account to extract temporal patterns.
+    Without this strategy, the receptive field $R$ is determined by
+
+    \begin{alignat}{1}
+        R &= 1 + m(c-1)  \label{eq:receptive_field}
+    \end{alignat}
+
     In order to have a big receptive field, Szegedy et al. \cite{Szegedy_2015_CVPR} point out that the computational budget poses a major bottleneck.
     Inspired by this paper, the authors introduced a down-sampled version of the dilated convolution.
     A dilation factor $d$ refers to the number of samples skipped, eg. $d=3$ refers to taking every third sample of the input in the convolution.
-    By introducing an adaptive dilation factor they are able to letting the receptive field size grow exponentially with respect to the number of hidden layers in the network.
+    By introducing an adaptive dilation factor they are able to let the receptive field size grow exponentially with respect to the number of hidden layers in the network.
     Formally, let's consider $q \in \mathbb{R}>1$ as the rate of the exponential growth of the dilation factor for each layer,
     the receptive field $R$ can be described as
-    \begin{equation}
+
         \begin{alignat}{1}
             R &= 1 + (c-1)(q^m-1)/(q-1).  \label{eq:adaptive_receptive_field}
         \end{alignat}
-    \end{equation}
 
-    As the last step the concatenation of the inception and dilation was performed such that for a sequence $z \in \mathbb{R}^T$ of length $T$ and the introduced filters
+
+    As the last step, the concatenation of the inception and dilation was performed such that for a sequence $z \in \mathbb{R}^T$ of length $T$ and the introduced filters
     $f_{1 \times 2} \in \mathbb{R}^2$,
     $f_{1 \times 3} \in \mathbb{R}^3$,
     $f_{1 \times 6} \in \mathbb{R}^6$,
     $f_{1 \times 7} \in \mathbb{R}^7$,
     the dilated inception layer is composed by
+
+    \begin{alignat}{1}
+        z &= concat(
+        z \star f_{1 \times 2},
+        z \star f_{1 \times 3},
+        z \star f_{1 \times 6},
+        z \star f_{1 \times 7}
+        ).
+        \label{eq:dilated_inception_layer_wrt_z}
+    \end{alignat}
+
+    whereby a dilated convolution of size $k$ for t [TODO FIND OUT WHAT THIS STANDS FOR!] is
+
     \begin{equation}
-        \begin{alignat}{1}
-            z &= concat(
-            z \star f_{1 \times 2},
-            z \star f_{1 \times 3},
-            z \star f_{1 \times 6},
-            z \star f_{1 \times 7}
-            ).
-            \label{eq:dilated_inception_layer_wrt_z}
-        \end{alignat}
+        z \star f_{1 \times k}(t) = \sum_{s=0}^{k-1} f_{1 \times k}(s)z(t-d \times s)
     \end{equation}
-    where by a dilated convolution of size $k$ for t [TODO FIND OUT WHAT THIS STANDS FOR!] is
-    \begin{equation}
-        \begin{alignat}{1}
-            z \star f_{1 \times k}(t), &= \mathlarger{\sum_{s=0}^{k-1} f_{1 \times k}(s)z(t-d \times s)}
-            \label{eq:dilated_convolution}
-        \end{alignat}
-    \end{equation}
+
 
     \subsection{About skip connections and the output module}
     Skip connection layers should avoid the gradient vanishing problem by introducing a layer after each temporal convolution module.
-    Further, to address the same issue residual connections were introduced to the layer that map from before a temporal convolution module to the next temporal convolution module, skipping one graph convolution module.
+    Further, to address the same issue residual connections were introduced to the layer that maps from before a temporal convolution module to the next temporal convolution module, skipping one graph convolution module.
     For the $i-th$ skip connection layer with input size $L_i$ we have  $1 \times L_i$ convolutions and standardizing output to the sequence size 1 [TODO double check in code!].
     The output is then a standard $ 1 \times 1$ convolution layer with the purpose of reshaping the channels from the inputs and the skipping layers to the desired output dimension.
 
     \subsection{The learning Algorithm}
+    With an increased number of multivariate variables and with such a big graph size,
+    performance issues with respect to runtime complexity and memory must be taken into consideration.
+    When training the GNN often all nodes must be held as in-memory representations, which might exceed the memory capacity for large graphs.
+
+    Inspired by the sub-graph training algorithm of Chiang et al. \cite{chiang2019cluster}, the authors split the graph
+    randomly for each training iteration.
+    The resulting sub-graph can then be learned by the nodes.
+    Over the learning process, all node combinations can possibly be learned and updated.
+    With this, they can reduce the time and space complexity from $\mathbf{O}(N^2)$ to $\mathbf{O}\left((\frac{N}{s})^2\right)$ for the graph learning layer.
+    After having well-trained node embeddings to global graph structure can be reconstructed to take full advantage of spatial learning.
 
     \begin{algorithm}
-        \caption{My algorithm}\label{euclid}
+        \scriptsize
+        \caption{The proposed learning algorithm}\label{learning}
+        \textbf{Input}
+
+        \begin{alignat*}{1}
+            \mathcal{O} &= \text{dataset} \\
+            \mathcal{V} &= \text{node set} \\
+            \Theta &= \text{random init. model parameters} \\
+            f(\cdot) &= \text{ initialized MTGNN model with } \Theta  \\
+            \gamma &= \text{learning rate} \\
+            b &= \text{batch size} \\
+            s &= \text{step size} \\
+            m &= \text{split size(default $\gets$ 1)}
+        \end{alignat*}
+
+        \begin{algorithmic}[1]
+            \State $iter \gets 1$
+            \State $r \gets 1$
+
+            \Repeat
+                \State $\mathcal{X} \in \mathbb{R}^{b \times T \times N \times D},\mathcal{Y} \in \mathbb{R}^{b \times T' \times N} \gets \text{sampled from }\mathcal{O}$
+                \State $W \gets \text{random split of V s.d.} \cup_{i=1}^m V_i = V $
+                \If{$iter \% s = 0 \land r \leqslant T'$ }
+                    \State $r \gets r+1$
+                \EndIf
+
+                \For{$i \in 1:m $}
+                    \State $\hat{\mathcal{Y}} \gets predict(f, \mathcal{X}[:,:,i,:], \Theta)$
+                    \State $\mathcal{L} \gets loss(\hat{\mathcal{Y}}[:,r,:], \mathcal{Y}[:,r,i])$
+                    \State $\Theta \gets train\_sgd\_and\_update\_weights(\Theta,\mathcal{L}, \gamma)$
+                \EndFor
+            \Until{$convergence$}
+        \end{algorithmic}
     \end{algorithm}
 
+    Further, they tried to optimize the multi-step forecasting by accounting for the issue that near-by predictions do have usually smaller losses than far-away predictions.
+    Optimizing only on the overall loss causes thus a distorted image of the error.
+    So they applied a curriculum learning strategy that only looks at the next step first and then enlarges the scope of the prediction.
+    By this, the difficulty of predicting a point far in the future can be reduced.
 
     \section{Experimental evaluation}
 
@@ -291,45 +340,3 @@
     \theendnotes
 
 \end{document}
-
-
-%A paragraph of text goes here.  Lots of text.  Plenty of interesting
-%text. \\
-%
-%More fascinating text. Features\endnote{Remember to use endnotes, not footnotes!} galore, plethora of promises.\\
-%
-%\section{This is Another Section}
-%
-%Some embedded literal typset code might
-%look like the following :
-%
-%{\tt \small
-%\begin{verbatim}
-%#include <iostream>
-%using namespace std;
-%main()
-%{
-%cout << "Hello world \n";
-%return 0;
-%}
-%
-%\end{verbatim}
-%}
-%
-%Now we're going to cite somebody.  Watch for the cite tag.
-%Here it comes~\cite{Einstein}.
-%
-%Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-%
-%Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-%
-%Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-%
-%Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-
-
-
-
-
-
