@@ -6,12 +6,12 @@
 %   Tcl 96
 % turned into a smartass generic template by De Clarke, with thanks to
 %   both the above pioneers
-% use at your own risk.  Complaints to /dev/null.
+% use at your own risk. Complaints to /dev/null.
 % make it two columns with no page numbering, default is 10 point
 
 % Munged by Fred Douglis <douglis@research.att.com> 10/97 to separate
-% the .sty file from the LaTeX source template, so that people can
-% more easily include the .sty file into an existing document.  Also
+% the .sty file from the LaTeX source template so that people can
+% more easily include the .sty file into an existing document. Also
 % changed to more closely follow the style guidelines as represented
 % by the Word sample file.
 
@@ -19,8 +19,8 @@
 % foot of page notes, don't include the endnotes package in the
 % usepackage command, below.
 
-\documentclass[letterpaper,twocolumn,11pt]{article}
-\usepackage{usenix,epsfig,endnotes}
+\documentclass[letterpaper, twocolumn,11pt]{article}
+\usepackage{usenix, epsfig, endnotes}
 \usepackage{natbib}
 \usepackage{amsmath}
 \usepackage{algorithm}
@@ -54,51 +54,50 @@
 
 %
 %\subsection*{Abstract}
-%Your Abstract Text Goes Here.  Just a few facts.
+%Your Abstract Text Goes Here. Just a few facts.
 %Whet our appetites.
 
 
     \section{Introduction}
 
-    Prediction of time series has a strong history with nevertheless importance today. With the rise of IoT devices, and a substantial
-    increase in information gathering in a wide variety of domains the bases for the current state-of-the-art time series forecasting was laid.
-    The applicability of time series prediction can be found in several domains such as finance, and electricity markets, but also in several fields in science such as climate \cite{mudelsee2019trend} or medicine \cite{topol2019high}.
+    Prediction of time series has a strong history with nevertheless importance today. With the rise of IoT devices and a substantial
+    increase in information gathering in various domains started. This laid the bases for the current state-of-the-art time series forecasting.
+    The applicability of time series prediction can be found in several domains, such as finance and electricity markets, but also in several fields in science, such as climate \cite{mudelsee2019trend}, and medicine \cite{topol2019high}.
 
-	With the rise of machine learning and increased availability of time series data in combination with computational power, the trend from parametric models such as autoregressive models \cite{box2015time} exponential smoothing \cite{gardner1985exponential} continued towards more data-driven approaches such as gaussian processes \cite{williams1995gaussian}, support vector regression \cite{smola2004tutorial} and more recently a wide variety of deep learning methods \cite{lim2021time, torres2021deep}.
+	With the rise of machine learning and increased availability of time series data in combination with computational power, the trend from parametric models such as autoregressive models \cite{box2015time} exponential smoothing \cite{gardner1985exponential} continued towards more data-driven approaches such as gaussian processes \cite{williams1995gaussian}, support vector regression \cite{smola2004tutorial}, and more recently a wide variety of deep learning methods \cite{lim2021time, torres2021deep}.
 
-   Time series forecasting can thereby be separated into uni-variate and multi-variate forecasting. While the former case relates to the forecasting of a single variable such as temperature, the latter case tries to predict multiple variables together. This has a wide range of applications such as modeling streams of tourists \cite{cankurt2016tourism},  over financial data \cite{torres2018applying}, to traffic prediction \cite{yin2016forecasting}.
+   Time series forecasting can thereby be separated into univariate and multivariate forecasting. While the former relates to forecasting a single variable, such as temperature, the latter tries to predict multiple variables together. Multivariate forecasting has a wide range of applications, such as modeling streams of tourists \cite{cankurt2016tourism},  over financial data \cite{torres2018applying}, to traffic prediction \cite{yin2016forecasting}.
 
-This report investigates a recent paper by Wu et. al. \cite{wu2020connecting}, which introduced a graph-based neural network for multivariate time series forecasting.
+This report investigates a recent paper by Wu et al. \cite{wu2020connecting}, which introduced a graph-based neural network for multivariate time series forecasting.
 
     \section{Methodical Background}
-    The paper investigated in the current report can be placed in the methodical perspective of time series forecasting while on the other hand  taking advantage of the more recently developed toolbox of graph neural networks (GNN).
+    The paper investigated in the current report can be placed in the methodical perspective of time series forecasting while, on the other hand taking advantage of the more recently developed toolbox of graph neural networks (GNN).
 
     \subsection{Multivariate Time series forecasting (MTSF)}
-    While time series has a long history only a few relevant techniques for this paper should be described in this section.
+    While time series has a long history, only a few relevant techniques for this paper should be described in this section.
 
-    \textbf{VAR:} Vector autoregression models were a generalization from univariate time series forcasting. They assume a linear dependency between all variables, what leads to highly parameterized model with a quadratic growth with respect to the number of dimensions of the time series \cite{lutkepohl2013vector}. Attempts have been made to tackle these problems and the model has been proven especially in the finance forecasting .
-     thus over fitting \cite{lutkepohl2009econometric}.
+    \textbf{VAR:} Vector autoregression models were a generalization from univariate time series forecasting. They assume a linear dependency between all variables, which leads to a highly parameterized model with a quadratic growth concerning the number of dimensions of the time series \cite{lutkepohl2013vector}. Attempts have been made to tackle these problems, and the model has been proven, especially in finance forecasting \cite{lutkepohl2009econometric}.
 
-    \textbf{GP} Gaussian process is based on the structural property of byaesian neural networks and use often Markov chain Monte Carlo simulation. They are often used in a medical academic setting \cite{CHEN200759}. Both the VAR and the GP model are prone to over fitting due to there high number of tunable parameters {wu2020connecting}.
+    \textbf{GP} The gaussian process models are based on the structural property of bayesian neural networks and often use Markov chain Monte Carlo simulations. They are often used in a medical academic setting \cite{CHEN200759}. The VAR and the GP model are prone to overfitting due to the high number of tunable parameters \cite{wu2020connecting}.
 
-    \textbf{RNN} Recurrent neural networks attempt to capture temporal patterns for long-term dependencies as well as for series of variable length by introducing so called Gated Recurrent Units (GRU) \cite{che2018recurrent}.
+    \textbf{RNN} Recurrent neural networks attempt to capture temporal patterns for long-term dependencies as well as for series of variable length by introducing so-called Gated Recurrent Units (GRU) \cite{che2018recurrent}.
 
-    \textbf{LSTM}  Long-short-term models are variants of recurrent networks that introduce a attention mechanism. To mention two variants, TPA-LSTM introduces a set of filters to capture time-scale independent temporal patterns and use the so captured frequency domain information  for multivariate time series prediction \cite{shih2019temporal}. A second example is the LSTNet, Lai et al. \cite{lai2018modeling} used a convolution neural network in addition to a recurrent neural network to extract long-term patterns and short-term dependencies between the variables. Both models use a use a implicit mechanism to model the pair-wise variable dependencies.
+    \textbf{LSTM}  Long-short-term models are variants of recurrent networks that introduce an attention mechanism. To mention two variants, TPA-LSTM introduces a set of filters to capture time-scale independent temporal patterns and use the so-captured frequency domain information for multivariate time series prediction \cite{shih2019temporal}. A second example is the LSTNet. Lai et al. \cite{lai2018modeling} used a convolution neural network and a recurrent neural network to extract long-term patterns and short-term dependencies between the variables. Both models use an implicit mechanism to model the pair-wise variable dependencies.
 
     \subsection{Graph neural networks}
-Introducing graphs into multivariate time series prediction is not far fetched. Graphs give the possibility to model highly complex relations between different nodes. They are used in many different domains and can easily be applied to  the problem of time series forecasting by referring to a variable of a time series as a node and capturing the spacial relations between these variables in a graph representation.
+Introducing graphs into multivariate time series prediction is not far-fetched. Graphs give the possibility to model highly complex relations between different nodes. They are used in many different domains and can easily be applied to the time series forecasting problem by referring to a time series variable as a node and capturing the spatial relations between the nodes in a graph representation.
 
-Graph neural networks (GNN) have gained popularity in recent years, by proving their expressive power in different machine learning tasks \cite{zhou2020graph}. While RNNs can capture cyclic patterns in data, the idea originates back to optimizing a state transition system until it converges \cite{lecun1998gradient}. GNNs are generalizations of conventional CNNs which are restricted to euclidean space to a non-Euclidean domain \cite{bronstein2017geometric}.
+Graph neural networks (GNN) have gained popularity in recent years by proving their expressive power in different machine learning tasks \cite{zhou2020graph}. While RNNs can capture cyclic patterns in data, the idea originates back to optimizing a state transition system until it converges \cite{lecun1998gradient}. GNNs are in that regard generalizations of conventional CNNs. GNNs overcome the restriction from being limited to euclidean space by introducing a structure that can handle non-Euclidean domains \cite{bronstein2017geometric}.
 
     \section{MTGNN: Connecting the Dots}
-    In the paper of Wu et al. \cite{wu2020connecting} two major challenges concerning the combination of GNN and multivariate
-    time series forecasting is addressed.
+    In the paper of Wu et al. \cite{wu2020connecting}, two significant challenges concerning the combination of GNN and multivariate
+    time series forecasting are addressed.
     The graph structure in MTSF represents the relation between the different temporal features.
-    A major issue is, that without prior knowledge, the relationship between these features is unknown.
-    Further does the graph structure differ between different data sets, what makes it impossible to have a full end-to-end framework that adjusts to the properties of the graph.
-    The second challenge addresses the issue that a previously learned or explicitly supplied graph structure might not be optimal and thus,
+    A major issue is that without prior knowledge, the relationship between these features is unknown.
+    Further, the graph structure differs between different data sets, which makes it impossible to have a complete end-to-end framework that adjusts to the properties of the graph.
+    The second challenge addresses the issue that a previously learned or explicitly supplied graph structure might not be optimal, and thus,
     should be updated during the learning process.
-    A step, most previously published GNNs leave aside, while focusing only on message passing.
+    This is a step most of the previously published GNNs leave aside while focusing only on message passing between the nodes.
 
     \subsection{Formulating the Problem}
     A $N$ dimensional multivariate time series consists of a series of steps in time $z_t \in R^N$, with $z_t[i] \in R$
@@ -116,36 +115,36 @@ Graph neural networks (GNN) have gained popularity in recent years, by proving t
     Further, $e = (u,v)$ represents an edge from node $u$ to node $v$, which represents the relation between the nodes.
 
     The Node Neighborhood of a node $v \in V$ can then be described as $N(v) = \{u \in V| (u,v) \in E\}$.
-    The relationship of the nodes and with that the existence of edges between every two nodes $v_i,v_j \in G$
+    The relationship of the nodes and, with that, the existence of edges between every two nodes $v_i,v_j \in G$
     can be described in a adjacency Matrix $A \in R^{N\times N}$ by
     having  $A_{ij} = c > 0$ if $(v_i,v_j) \in E$. If there is no edge $(v_i,v_j) \notin E$ we write $Aij = 0$.
 
     \subsection{Architectual overview}
-    The authors propose three major components to address the challenges. To attack the first challenge a new graph learning layer
-    is introduced. The goal is to extract a first proposal of the interconnectedness of the features. The output of the model is a sparse adjacency matrix based on the supplied training data.
-    Based on the graph learning layer, the spacial dependencies among the features are learned in a graph convolution module to address the over-smoothing problem [describe -> directed graphs].
-    In the temporal convolution module, the temporal patterns with different frequencies and lengths should be caught with a customized 1D convolution.
+    The authors propose three significant components to address the challenges. A new graph learning layer
+    is introduced to attack the first challenge of the unknown graph structure. The goal is to extract a first proposal of the relations between the features. The model's output is a sparse adjacency matrix based on the supplied training data.
+    Based on the graph learning layer, the spacial dependencies among the features are learned in a graph convolution module to address the over-smoothing problem.
+    The temporal convolution module aims at catching temporal patterns with different frequencies and lengths should by a customized 1D convolution.
 
     \subsection{Graph Learning Layer}
-    When trying to take the relationships of different variables of a time series into account, one encounters two major issues.
+    One encounters two major issues when trying to assess the relationships of different time series variables.
     First, suppose the graph $G$ is a directed graph and thus $(u,v)\in E$ might differ from $(v,u)\in E$,
     then calculating the full adjacency matrix by a common distance metric as the euclidean distance results in time and space complexity of $O(N^2)$.
-    With such an approach, forecasting a time series with a high number of dimensions is nearly impossible.
+    Forecasting a time series with many dimensions is nearly impossible with such an approach.
 
     Having a directed graph with a potentially asymmetric adjacency matrix is not far-fetched.
-    In practice, having a node being influenced by another node but not vice versa can easily be observed by the phenomenon of traffic flow.
+    In practice, having a node influenced by another node but not vice versa can easily be observed by the phenomenon of traffic flow.
     More generally, any signal flowing over a net of nodes over time will lead to uni-directed relations.
     Perpendicularly, most distance metrics lead to a symmetric adjacency matrix as they are mostly bi-directional.
 
-    To address these issues the authors propose a method to extract uni-directional relationships in combination with restricting the sampling
+    To address these issues, the authors propose a method to extract uni-directional relationships. Further they restrict the sampling
     to only a subset of nodes for each mini-batch to alleviate the time and space complexity.
 
-    For two learnable nodes $E_i, E_j$ the uni-directional relation is calculated as
+    For two randomly initialized node embeddings $E_1, E2$, the uni-directional relation is calculated as
 
     \begin{alignat}{1}
-        M_i &= \tanh (\alpha E_i \Theta_i) \\
-        M_j &= \tanh (\alpha E_j \Theta_j)  \\
-        A_{ij} &= ReLU(\tanh (\alpha(M_i M_j^T - M_j M_i^T))) \label{eq:adjacency_matrix}
+        M_1 &= \tanh (\alpha E_1 \Theta_1) \\
+        M_2 &= \tanh (\alpha E_2 \Theta_2)  \\
+        A &= ReLU(\tanh (\alpha(M_1 M_2^T - M_2 M_1^T))) \label{eq:adjacency_matrix}
     \end{alignat}
     \begin{algorithm}
         \caption{Algorithm: argtopk}\label{alg:argtopk}
@@ -156,29 +155,27 @@ Graph neural networks (GNN) have gained popularity in recent years, by proving t
             \EndFor
         \end{algorithmic}
     \end{algorithm}
-    where the saturation rate [explain] is controlled by the hyper-parameter $\alpha$ and  $\Theta_i, \Theta_j$ represent
+    where the saturation rate is controlled by the hyper-parameter $\alpha$ and  $\Theta_i, \Theta_j$ represent
     model parameters. The adjacency matrix $A$ is regularized by the equation \ref{eq:adjacency_matrix}
     by setting the negative counterpart of a positive valued cell $A_{ij}$ to $A_{ji} = 0$. In the algorithm argtopk \ref{alg:argtopk}
     all weights apart from the top k are set to 0 for each node.
     This means we keep only the edges between the node and its top k neighbors and make the adjacency matrix thus sparse to improve the computation in the graph convolution module.
 
     This is an attempt to have a flexible way of learning stable and interpretable features during training and can still be updatable by new training data after the online training process.
-    The authors refrained to update the weights dynamically over time as this prevents the model from convergence.
+    The authors refrained from updating the weights dynamically over time as this prevents the model from convergence.
     To benefit from external knowledge about the graph structure of the model, it is possible to add a static node feature matrix $Z$
     which is then used to calculate the adjacency matrix with $E_1 =  E_2 = Z $.
 
     \subsection{Graph Concolution Module}
-    In the so-called graph convolutional module, the authors try to integrate information about the node neighbors by introducing two mix-hop layers.
+    The authors tried to integrate information about the node neighbors by introducing two mix-hop layers in the so-called graph convolutional module.
 
-    The issue of integrating spatial information such as the relation between the nodes has been studied [TODO read and elaborate 9,2].
-
-    The key goal of the mix-hop layer is to integrating the information of different neighbors of different distances by compromising on time and space complexity \cite{AbuElHaija}.
-    More generally the neighborhood aggregation in this step is basically a variant of Laplacian smoothing \cite{leskovec2005graphs}.
-    A well-known difficulty is the potentially negative impact of information given by the nodes in higher levels of the signal stream such as the root of the graph.
+    The key goal of the mix-hop layer is to integrate the information of different neighbors with different distances by compromising on time, and space complexity \cite{AbuElHaija}.
+    More generally, the neighborhood aggregation in this step is a variant of Laplacian smoothing \cite{leskovec2005graphs}.
+    A well-known difficulty is the potentially negative impact of information given by the nodes in higher levels of the signal stream, such as the root of the graph.
     This can be handled by keeping a proportion of the original hidden states while at the same time integrating the information
     of the node neighborhood.
     It is also necessary to avoid the multi-layer network reaching the random walk's limit distribution.
-    If not handled, the recursive information propagation along the graph structure converges towards a single point with an increasing number of graph convolution layers. \cite{klicpera2018predict}.
+    If not handled correctly, the propagation along the graph structure converges towards a single point. This happens especially with an increasing number of graph convolution layers. \cite{klicpera2018predict}.
 
     The authors tackled these issues by introducing an improved version of the mix-propagation layer that functions in an
     information propagation step and an information selection step.
@@ -189,45 +186,45 @@ Graph neural networks (GNN) have gained popularity in recent years, by proving t
     where the hidden state input is set as $H^0 = H_{in}$, $\tilde{A} = \tilde{D}^{-1}(A +I)$ with $\tilde{D}_{ii}=1 + \sum_{j}^{K}A_{ij}$.
     The hyperparameter $\beta$ defines the ratio between the amount of new information flowing in by the next hop versus the information of the original hidden state input.
 
-    In the second step the information is selected by the parameter matrix $W^{i}$ as follows
+    In the second step, the information is selected by the parameter matrix $W^{i}$ as follows:
 
     \begin{equation}
         H_{out} =\sum_{i}^{K} H^i W^i  \label{eq:hop_selection}
     \end{equation}
 
-    In the end, one of the two mix-hop layers gets to run with the adjacency matrix and the other one with the transposed adjacency matrix.
+    In the end, one of the two mix-hop layers are run, one with the adjacency matrix and the other with the transposed adjacency matrix.
     The output of the graph convolution module is then the sum of both mix-hop layers.
 
     \subsection{Temporal Convolution Module}
     In this step, the goal is to catch temporal information in a set of high-level features.
     Therefore the authors introduce a dilatated inception layer which is executed once with a tangent hyperbolic activation function at the end
     and a second time with a sigmoid activation function at the end.
-    The goal of the first activation function is to act as a filtering mechanism while the latter acts as a gating function
+    The goal of the first activation function is to act as a filtering mechanism, while the latter acts as a gating function
     to control the amount of information passed to the next module.
     The output of the module is the multiplied result of the two layers.
 
     The dilated inception layer is inspired by two strategies to do temporal 1D convolution.
-    To capture temporal patterns of different lengths filtering with kernels of different sizes were used.
-    Secondly, to capture long-time sequences a dilated convolution strategy was used.
-    This acts as if the kernel is extended leaving out samples and thus it is able to be sensitive to longer time sequences \cite{xi2018deep}.
+Filtering with kernels of different sizes was used to capture temporal patterns of different lengths.
+    Secondly, to capture long-time sequences, a dilated convolution strategy was used.
+    This acts as if the kernel is extended, leaving out samples, and thus it can be sensitive to longer time sequences \cite{xi2018deep}.
 
     The first strategy was strongly inspired by image processing.
-    Applied to the 1-dimensional temporal convolution problem, the authors identified the filtering sizes of 7, 12,24,24,28,60
+    Applied to the 1-dimensional temporal convolution problem, the authors identified the filtering sizes of 7, 12, 24, 24, 28, 60
     as the major lengths regarding cycling events in time series.
-    All these cycles can be described by stacking multiple inception layers of size $1 \times 2$,$1 \times 3$,$1 \times 6$,$1 \times 7$.
+    All these cycles can be described by stacking multiple inception layers of size $1 \times 2$, $1 \times 3$, $1 \times 6$, and $1 \times 7$.
 
-    The dilated convolution addresses the issue of the receptive field size being linear depending on the number of convolutional layers $m$ and the size of the kernel $c$.
-    The receptive field describes the window of a time series input that can as maximum is taken into account to extract temporal patterns.
+    The dilated convolution addresses the issue of the linear receptive field size depending on the number of convolutional layers $m$ and the kernel $c$.
+    The receptive field describes the window of a time series input that can, as a maximum, be taken into account to extract temporal patterns.
     Without this strategy, the receptive field $R$ is determined by
 
     \begin{alignat}{1}
         R &= 1 + m(c-1)  \label{eq:receptive_field}
     \end{alignat}
 
-    In order to have a big receptive field, Szegedy et al. \cite{Szegedy_2015_CVPR} point out that the computational budget poses a major bottleneck.
+    To have a big receptive field, Szegedy et al. \cite{Szegedy_2015_CVPR} points out that the computational budget poses a significant bottleneck.
     Inspired by this paper, the authors introduced a down-sampled version of the dilated convolution.
-    A dilation factor $d$ refers to the number of samples skipped, eg. $d=3$ refers to taking every third sample of the input in the convolution.
-    By introducing an adaptive dilation factor they are able to let the receptive field size grow exponentially with respect to the number of hidden layers in the network.
+    A dilation factor $d$ refers to the number of samples skipped. E.g., $d=3$ refers to taking every third sample of the input in the convolution.
+    By introducing an adaptive dilation factor, they can let the receptive field size grow exponentially concerning the number of hidden layers in the network.
     Formally, let's consider $q \in \mathbb{R}>1$ as the rate of the exponential growth of the dilation factor for each layer,
     the receptive field $R$ can be described as
 
@@ -236,7 +233,7 @@ Graph neural networks (GNN) have gained popularity in recent years, by proving t
     \end{alignat}
 
 
-    As the last step, the concatenation of the inception and dilation was performed such that for a sequence $z \in \mathbb{R}^T$ of length $T$ and the introduced filters
+    As last step, the concatenation of the inception and dilation was performed such that for a sequence $z \in \mathbb{R}^T$ of length $T$ and the introduced filters
     $f_{1 \times 2} \in \mathbb{R}^2$,
     $f_{1 \times 3} \in \mathbb{R}^3$,
     $f_{1 \times 6} \in \mathbb{R}^6$,
@@ -253,29 +250,29 @@ Graph neural networks (GNN) have gained popularity in recent years, by proving t
         \label{eq:dilated_inception_layer_wrt_z}
     \end{alignat}
 
-    whereby a dilated convolution of size $k$ for t [TODO FIND OUT WHAT THIS STANDS FOR!] is
+    Whereby a dilated convolution of size $k$ for t is
 
     \begin{equation}
         z \star f_{1 \times k}(t) = \sum_{s=0}^{k-1} f_{1 \times k}(s)z(t-d \times s)
     \end{equation}
 
     \subsection{About skip connections and the output module}
-    Skip connection layers should avoid the gradient vanishing problem by introducing a layer after each temporal convolution module.
-    Further, to address the same issue residual connections were introduced to the layer that maps from before a temporal convolution module to the next temporal convolution module, skipping one graph convolution module.
-    For the $i-th$ skip connection layer with input size $L_i$ we have  $1 \times L_i$ convolutions and standardizing output to the sequence size 1 [TODO double check in code!].
-    The output is then a standard $ 1 \times 1$ convolution layer with the purpose of reshaping the channels from the inputs and the skipping layers to the desired output dimension.
+    The skip connection layers should avoid the gradient vanishing problem by introducing a layer after each temporal convolution module.
+    Further, to address the same issue, residual connections were introduced to the layer that maps from before a temporal convolution module to the next temporal convolution module, skipping one graph convolution module.
+    For the $i-th$ skip connection layer with input size $L_i$, we have  $1 \times L_i$ convolutions and standardizing output to the sequence size 1.
+    The output is then a standard $ 1 \times 1$ convolution layer to reshape the channels from the inputs and the skipping layers to the desired output dimension.
 
     \subsection{The learning Algorithm}
-    With an increased number of multivariate variables and with such a big graph size,
-    performance issues with respect to runtime complexity and memory must be taken into consideration.
-    When training the GNN often all nodes must be held as in-memory representations, which might exceed the memory capacity for large graphs.
+    With an increased number of multivariate variables and such a big graph size,
+    performance issues concerning runtime complexity and memory must be considered.
+    When training the GNN, often all nodes must be held as in-memory representations, which might exceed the memory capacity for large graphs.
 
     Inspired by the sub-graph training algorithm of Chiang et al. \cite{chiang2019cluster}, the authors split the graph
     randomly for each training iteration.
-    The resulting sub-graph can then be learned by the nodes.
+    The nodes can then learn the resulting sub-graph.
     Over the learning process, all node combinations can possibly be learned and updated.
     With this, they can reduce the time and space complexity from $\mathbf{O}(N^2)$ to $\mathbf{O}\left((\frac{N}{s})^2\right)$ for the graph learning layer.
-    After having well-trained node embeddings to global graph structure can be reconstructed to take full advantage of spatial learning.
+    After having well-trained node embeddings, the global graph structure can be reconstructed to take full advantage of spatial learning.
 
     \begin{algorithm}
         \scriptsize
@@ -313,96 +310,96 @@ Graph neural networks (GNN) have gained popularity in recent years, by proving t
         \end{algorithmic}
     \end{algorithm}
 
-    Further, they tried to optimize the multi-step forecasting by accounting for the issue that near-by predictions do have usually smaller losses than far-away predictions.
+    Further, they tried to optimize the multi-step forecasting by accounting for the fact that near-by predictions usually have smaller losses than far-away predictions.
     Optimizing only on the overall loss causes thus a distorted image of the error.
     So they applied a curriculum learning strategy that only looks at the next step first and then enlarges the scope of the prediction.
     By this, the difficulty of predicting a point far in the future can be reduced.
 
 
     \section{Experimental evaluation}
-    In this section a brief overview of their evaluation of the MTGNN algorithm is given.
-    The authors compared the MTGNN algorithem to a selection of other multi-variate time series models for both single step prediction and predicting a sequence of steps in the future.
+    This section gives a brief overview of their evaluation of the MTGNN algorithm.
+    The authors compared the MTGNN algorithm to a selection of other multivariate time series models for both single-step prediction and predicting a sequence of steps in the future.
 
     \subsection{single step}
-    For the single step prediction the results were compared based on the root squared error
+    For the single-step prediction, the results were compared based on the root-squared error
     and the empirical correlation $r$.
     The benchmark datasets consisted out of
-    one traffic datasets (862 nodes, 17544 samples),
+    one traffic dataset (862 nodes, 17544 samples),
     a solar-energy dataset (137 nodes, 52560 samples),
-    a electricity dataset (321 nodes, 26304 samples),
-    and a exchange-rate dataset (8 nodes, 7588 samples).
-    For each dataset the input length was fixed to 168 samples and the output was one sample.
-    The model was trained with a so called fixed horizon, such that the predicted sample was either 3, 6, 12 or 24 samples in the future.
+    an electricity dataset (321 nodes, 26304 samples),
+    and an exchange-rate dataset (8 nodes, 7588 samples).
+    For each dataset, the input length was fixed to 168 samples, and the output was one sample.
+    The model was trained with a so-called fixed horizon, such that the predicted sample was either 3, 6, 12, or 24 samples in the future.
     Two versions of the MTGNN model were trained.
     One with graph sampling and one without.
     Both were compared against an
     auto-regressive model (AR),
-    a model consisting out of a multi-layer perceptron combined with a AR called VAR-MLP,
-    a gaussion-process model (GP),
+    a model consisting of a multi-layer perceptron combined with an AR called VAR-MLP,
+    a gaussian-process model (GP),
     a recurrent neural network (RNN-GRU),
     a long-short-term time series neural network (LSTnet),
-    and deep learning model called TPA-LSTM which introduces a temporal pattern attention mechanism.
+    and deep learning model called TPA-LSTM, which introduces a temporal pattern attention mechanism.
 
-    Looking at the results we can observe that for the traffic and the electricity dataset the MTGNN model had the best performance with regards to RSE and CORR for a horizon of 3,12,24.
-    While the MTGNN model with sampling showed the lowest RSE and the highest correlation for a horizon of 6.
-    For the solar-energy dataset the MTGNN model was only excelled by the TPA-LSTM model for the RSME and the CORR for a horizon of 6 and the CORR with a horizon of 24.
-    For the exchange rate the TPA-LSTM showed the best performance for all horizons with regards to the RSE and for the CORR with a horizon of 3.
-    For a horizon of 12, 24 the sampled MTGNN showed the highest CORR while for a horizon of 6 the RNN-GRU outperformed the other models with regards to the CORR.
+    Looking at the results, we can observe that for the traffic and the electricity dataset, the MTGNN model had the best performance concerning RSE and CORR for a horizon of 3, 12, 24 samples.
+    The MTGNN model with sampling showed the lowest RSE and the highest correlation for a horizon of 6.
+    For the solar-energy dataset, the MTGNN model was only excelled by the TPA-LSTM model for the RSME and the CORR with a horizon of 6 and analoge for CORR with a horizon of 24.
+    For the exchange rate, the TPA-LSTM showed the best performance for all horizons concerning the RSE and the CORR, both with a horizon of 3.
+    For a horizon of 12 and 24, the sampled MTGNN showed the highest CORR, while for a horizon of 6, the RNN-GRU outperformed the other models with regard to the CORR.
 
     \subsection{multistep-prediction}
-    For the comparison of the multistep prediction the mean absolute error (MAE), the root mean square error (RMSE) and the mean absolute percentage error (MAPE) were used as comparison metric.
+    For the comparison of the multi-step prediction, the mean absolute error (MAE), the root mean square error (RMSE), and the mean absolute percentage error (MAPE) was used as a comparison metric.
     Two spatial-temporal graph neural network datasets were used for model benchmarking and compared against six other graph neural networks.
     Of relevance is the WaveNet, a network that integrates diffusion graph convolutions with 1D dilated convolutions,
-    MRA-BGCN which is a multi-range atteentive bicomponent graph neural network, and
-    GMAN, a graph neural network with spatial and temporal attention mechanisms.
-    The datasets were the metr-la dataset with 207 nodes and 34272 samples and the pems-bay dataset with 325 nodes and 52116 samples.
-    The input size to all networks was 12 samples and the output was also set to 12 samples.
-    The evaluated horizons were 3, 6, 12.
+    MRA-BGCN, which is a multi-range attentive bicomponent graph neural network, and
+    GMAN is a graph neural network with spatial and temporal attention mechanisms.
+    The datasets were the METR-LA dataset with 207 nodes and 34272 samples and the PEMS-BAY dataset with 325 nodes and 52116 samples.
+    The input size to all networks was 12 samples, and the output was also set to 12 samples.
+    The evaluated horizons were 3, 6, and 12.
 
-    The the best performing model for the metr-la dataset for a horizon of 3 were with regards to MAE and RMSE the MRA\_BGCN model, while the MTGNN sampling model showed the lowes MAPE.
-    The MGTNN model performed best in all metrics for the a horizon of 6 and the GMAN model performed best with regards to all metrics for a horizon of 12 steps.
-    For the pems-bay dataset GMAN showed in all metrics the best performance for a horizon of 12 steps, while MRA-BGCNM showed the best performance for a horizon of 3 and 6 for the MAE and the RMSE.
-    The MRA-BGCNM showed also the best performance for the MAPE with a horizon of 6 and the WaveNet model had the lowest MAPE for a horizon of 3.
+    The best performing model for the METR-LA dataset for a horizon of 3 was with regards to MAE and RMSE in the MRA\_BGCN model, while the MTGNN sampling model showed the lowes MAPE.
+    The MGTNN model performed best in all metrics for a horizon of 6, and the GMAN model performed best with regard to all metrics for a horizon of 12 steps.
+    For the PEMS-BAY dataset, GMAN showed in all metrics the best performance for a horizon of 12 steps, while MRA-BGCNM showed the best performance for a horizon of 3 and 6 for the MAE and the RMSE.
+    The MRA-BGCNM also showed the best performance for the MAPE with a horizon of 6, and the WaveNet model had the lowest MAPE for a horizon of 3.
 
     \subsection{The ablation study}
-    In order to remove the effectiveness of the components, a ablation study was conducted, whereby the full trained model was compared to a version without each of the four variations.
-    First the graph convolution module was removed substituted by a linear layer.
-    Secondly the mix-hop propagation layer, where the neighborhood was integrated was bypassed.
+    In order to remove the effectiveness of the components, an ablation study was conducted, whereby the fully trained model was compared to a version without each of the four variations.
+    First, the graph convolution module was removed and substituted by a linear layer.
+    Secondly, the mix-hop propagation layer, where the neighborhood was integrated, was bypassed.
     Third, the inception in the dilated inception layer was replaced by a single 1 x 7 filter.
-    Fourth, the curriculum learning was removed and thus the model was not trained stepwise.
+    Fourth, the curriculum learning was removed, and thus, the model was not trained step-wise.
     Each of the models was trained 10 times and with 50 epochs each.
-    The mean and the standard deviation of the MAE, RMSE and MAPE was then reported.
+    The mean and the standard deviation of the MAE, RMSE, and MAPE were then reported.
 
-    For all of the metrics the full MTGNN model showed the best performance.
+    For all of the metrics, the full MTGNN model showed the best performance.
     The authors claim that the model improves significantly by the graph convolution layer and thus makes use of the information flow among the nodes.
     The mix-hop layer appears to contribute to the information selection in each information propagation step.
-    Further they claim that the inception contributes significantly to the model for the RMSE (although only marginal for MAE).
-    Also teh curriculum learning strategy is claimed to be effective by first converging in an easy task and then step-wise calibrating the parameters.
+    Further, they claim that the inception contributes significantly to the model for the RMSE (although only marginal for MAE).
+    Also, the curriculum learning strategy is claimed to be effective by first converging on an easy task and then step-wise calibrating the parameters.
 
     \subsection{graph learning layer}
-    The evaluation of the graph learning layer was performed on the metr-la data only and evaluate on the validation set with 10 runs.
-    Their method of constructing the adjacency matrix $A$ called the uni-directed-A was compared to a predefined A, a global - A with $n^2$ parameters, an undirected - A and directed- A represent the similarities of the node embeddings and at last a dynamic - A which takes the temporal change of the nodes into account.
-    Based on the MAE, MAPE and RMSE the uni-directed a method performed significantly better than the other methods.
+    The evaluation of the graph learning layer was performed on the METR-LA data only and evaluated on the validation set with 10 runs.
+    Their method of constructing the adjacency matrix $A$ called the uni-directed-A was compared to a predefined A, a global - A with $n^2$ parameters, an undirected-A and directed-A representing the similarities of the node embeddings, and at last a dynamic - A which takes the temporal change of the nodes into account.
+    Based on the MAE, MAPE, and RMSE, the uni-directed method performed significantly better than the other methods.
 
 
     \section{Report Experiments}
-    In this section some of the results should be replicated and additional experiments will be conducted to get a more concise understanding of the MTGNN network.
-    Due to limited computational power some of the experiments are simplified, only calculated on a subset of the data, or an independent sample is calculated and compared to the proposed value.
+    In this section, some of the results should be replicated, and additional experiments will be conducted to get a more concise understanding of the MTGNN network.
+    Due to limited computational power, only a very little amount could be carried out.
 
     \subsection{Methods}
     The primary focus lies in replicating the reported results.
-    To accomplish this the same experiments as described above should be executed.
-    Especially of interest is the validation of the single-stept and multi-step forecast in order.
-    Although the authors supplied the mean of the experiments, they missed out on the standard deviation or any confidence measure.
+    To accomplish this, the same experiments as described above should be executed.
+    Especially of interest is the validation of the single-step and multi-step forecast in order.
+    Although the authors supplied the mean of the experiments, they missed out on the standard deviation or any disperson measure.
 
-    Ideally for interpreting the results, one needs to rerun the experiments at least the proposed 10 times to see if the increase of MTGNN is significant at all and shows a certain effect size.
-    Assuming the residuals to be uniformly distributed, the remaining models could the easily compared against the MTGNN model. Expecting equal variances between the models a pooled-variance t-test is used.
+    Ideally, for interpreting the results, one needs to rerun the experiments at least the proposed 10 times to see if the increase of MTGNN is significant at all and with what effect size.
+    Assuming that the residuals are uniformly distributed, the remaining models could then easily be compared against the MTGNN model. As equal variances between the models can be expected, a pooled-variance t-test is should be used.
 
     The same procedure should then be carried out for the ablation study.
 
     \subsection{Results}
     Due to computational complexity in time and space, only four samples were yet calculated.
-    To run the proposed experiments a huge amount of computation power is needed.
+
 
     \textbf{Single-step learning} The calculated samples include one for each of the four single-step forecasting datasets.
     Due to computational resource limitations, the number of epochs varied from the 30 epochs used in the original experiment.
@@ -437,7 +434,7 @@ Graph neural networks (GNN) have gained popularity in recent years, by proving t
 
     \textbf{Multi-step learning}. This section is still missing as the code was not rewritten and run. Thus, no results have been obtained.
 
-    \textbf{Ablation Study}. The models for this section were not retrained. Since mean and the standard deviation were presented, the significance estimates could be recalculated.
+    \textbf{Ablation Study}. The models for this section were not retrained. Since the mean and the standard deviation were presented, the significance estimates could be recalculated.
 \begin{table}
        \scriptsize
 \centering
@@ -472,36 +469,51 @@ w/o CL        & p=0.1534,t=-1.4907, $r^2=0.67$~ (large)   \\
 \hhline{==}
 \end{tabular}
 \end{table}
-As expected performed the network without the  graph convolution module was significantly lower than the full MTGNN for all metrics and showed a large effect size.
-The model without the Mix-Hop layer performed significantly worse with regards to MAE and RSME as effect sizes, while the effect was only small  and not significant for the MAPE.
+As expected, the network without the graph convolution module was significantly lower than the full MTGNN for all metrics and showed a large effect size.
+The model without the Mix-Hop layer performed significantly worse with regards to MAE and RSME as effect sizes, while the effect was only small and not significant for the MAPE.
 Surprisingly, the MTGNN did not perform significantly better than without the inception layer. The effect sizes were medium for MAE and RSME and small for MAPE.
-While MTGNN performed with a large effect size significantly better for the MAE, it did not when looking at the RSME (effect size medium) or the MAPE (effect size large).
+While MTGNN performed with a large effect size significantly better for the MAE, it did not matter when looking at the RSME (effect size medium) or the MAPE (effect size large).
 All calculations had equal variances when compared in a two-tailed F-Test.
 
     \section{Discussion}
-	The study of Wu et. al. introduces an interesting new framework for time series forecasting by combining state-of-the-art methods of graph neural networks and time series prediction.
-    Their result show that the MTGNN can combat if not even out-perform leading forecasting methods for single-step forecasting. By looking at the properties we can speculate that their network is especially powerful for time series data that has high spacial inter-dependency with a rather high number of samples and nodes.
-    As the space complexity depends also on the number of nodes,  the introduced sub-graph learning increases the power of the model even more.
-   Futher, for multi-step forecasting the model does perform almost equally well as the reference graph learning models chosen. Although, the performance does differ depending on the benchmark-dataset.
+	The study of Wu et al. introduces an interesting new framework for time series forecasting by combining state-of-the-art methods of graph neural networks and time series prediction.
+    Their result shows that the MTGNN can combat, if not even outperform, leading forecasting methods for single-step forecasting. By looking at the properties, we can speculate that their network is especially powerful for time series data that has high spacial inter-dependency with a rather high number of samples and nodes.
+    As the space complexity also depends on the number of nodes,  the introduced sub-graph learning increases the model's power even more.
+   Further, for multi-step forecasting, the model does perform almost equally well as the reference graph learning models chosen. Although, the performance does differ depending on the benchmark dataset.
 
     \subsection{Integreation of Evaluation and Replication}
-The performed replication experiment was up to now not fully conducted. Thus, only preliminary conclusions can be drawn.
-Looking at the single step prediction, although the model was not trained with the same number of epochs for the solar, electricity and traffic dataset, we get for all of the three datasets near equal performance with one third / half of the training epochs.
-The achieved result for solar was only passed by the TPA-LSTM model and the MTGNN implementations. The replicated traffic model outperformed all other models. The same could be observed for the electricity model.
-For the exchange dataset which was trained on the same number of epochs as the original experiment, we even surpassed the performance on both evaluation metrics. Comparing the replicated model to the other models we rank for the RSE now second best, only surpassed by the TPA-LSTM model. The correlation of the exchange model ranks as first with better performance than the other models.
-As all the experiments were only run once, this ordinal comparison can not set into comparison with the observed values in the study by the authors. Nevertheless, the results show a strong performance of the models.
+The performed replication experiment was up now not entirely conducted. Thus, only preliminary conclusions can be drawn.
+Looking at the single-step prediction, although the model was not trained with the same number of epochs for the solar, electricity, and traffic dataset, we get for all three datasets near equal performance with one-third, respectivly half of the training epochs.
+The TPA-LSTM model and the MTGNN implementations were the only ones that surpassed the achieved result for solar data. The replicated traffic model outperformed all other models apart from the MTGNN, and the same could be observed for the electricity model.
+We even surpassed the performance on both evaluation metrics for the exchange dataset, which was trained on the same number of epochs as the original experiment. Comparing the replicated model to the other models, we rank the RSE now second best, only surpassed by the TPA-LSTM model. The correlation of the exchange model ranks first with better performance than any other model.
+As all the experiments were only run once and no measure of variation was given, this ordinal comparison can not further evaluate the observed values in the study by the authors. Nevertheless, the results show the strong performance of the models.
+
+The statistical evaluation of the ablation study was somewhat surprising, as it partially contrasts with the authors' interpretation.
+A rather obvious explanation for the high rate of not significant findings is, on the one hand, the relatively low sample size. Due to this, it might very likely be that the small and medium effects were not detected.
+The graph convolution shows the most substantial significant effect. This indicates that the model benefits from the information flow between the different nodes and that the structural information contributes to the classification result.
+The Mix-hop layer with such a part of the graph convolution layer, at least regarding the MAE and RSME, is beneficial for the model. This means the neighborhood information gathered and passed along the nodes contributes to the forecasting results.
+Only medium to small non-significant effects were shown for the inception layer. As the authors pointed out, this might be due to the increased parameters due to the replaced 1x7 filter. Thus, one can question the informative value of the test itself.
+The curriculum learning showed a somewhat mixed result. This can mean that the incremental learning strategy did not work as well as expected or that the effect shows more in one metric than another. Due to the small sample size, it is rather hard to make a clear call.
 
     \subsection{Critique}
-    - not structured evaluation
-    - choice of data sets
-    - no statistics for evaluation
-    - for ablation study not clear which dataset used, parameters
-    - choice of abaltion study - why was what component suspended?
-    - How about synthetic data, the datasets were not characteized with regards to their properties.
-    - interpretatoion is sparse
+    The study combines novel techniques and opens a new field in time series forecasting.
+    While the benchmarking datasets cover a range of applications, no synthesized data with specific properties was used for evaluation.
+    By this, the strength and weaknesses of the model could be much better evaluated.
+    Interesting would have also been to investigate the choice of parameters more in depth.
+    To the reader remains somewhat unclear why specific parameters were changed between the single-step and the multi-step forecasting.
+    The same is true for the parameter choice of the exchange dataset.
+
+    As mentioned above, the absence of accurate statistics in the model evaluation makes it even harder to interpret.
 
 
     \subsection{Future research}
+    The field of graph neural networks about time series forecasting is still relatively young and provides opportunities for innovation.
+    One such opportunity lies in identifying the properties of specific real-world datasets and adjusting the ideas presented in this paper to make full benefit in that regard.
+    Further, it remains somewhat unclear how the model behaves in terms of robustness, missing values, and other distortions. Investigating such behaviors is still to be done.
+
+    As mentioned, one limiting factor for big graphs is space and time complexity. Finding even more efficient graph embeddings and sampling methods could support bigger datasets and lead to faster computation.
+
+
 
     {\footnotesize \bibliographystyle{acm}
     \bibliography{bibliography}}
@@ -516,17 +528,17 @@ As all the experiments were only run once, this ordinal comparison can not set i
    The same parameters as in the original study were used.
 
    Specifically for single-step forecasting, an Adam optimizer with a gradient clip of 5 was used.
-   The learning rate was set to 0.001 and an L2 regularization penalty was applied.
+   The learning rate was set to 0.001, and an L2 regularization penalty was applied.
    After each temporal convolution layer, a dropout of 0.3 was applied.
    The mix-hop layer had a depth of 2 with a retain ratio of 0.05.
    The saturation rate of the graph learning layer was 3 with 40 node embeddings.
-   The whole network had 5 layers each a graph learning and a temporal learning module.
-   The dilated inception layer had a dilation exponential factor of 2.
+   The whole network had 5 layers, each a graph learning and a temporal learning module.
+   The dilated inception layer had an exponential dilation factor of 2.
    The first 1x1 convolution took 1 input channel with 16 output channels.
    The skip layers had 32 output channels.
    While the first layer of the output module had 64 channels, the second layer of the output module had only 1.
-   The three datasets Traffic, Solar, and Electricity had for each node 20 neighbors, whereas the exchange rate had only 8.
+   The three datasets, Traffic, Solar, and Electricity, had for each node 20 neighbors, whereas the exchange rate had only 8.
    All datasets had a batch size of 4.
    Sampling was for simplicity not used and thus set to 1.
-   The reported metric was as in the paper the RSE and CORR.
+   As in the paper, the reported metric was the RSE and CORR.
 \end{document}
