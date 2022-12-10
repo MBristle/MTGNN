@@ -1,4 +1,6 @@
 import pickle
+
+import easydict
 import numpy as np
 import os
 import scipy.sparse as sp
@@ -6,16 +8,24 @@ import torch
 from scipy.sparse import linalg
 from torch.autograd import Variable
 
+
 def normal_std(x):
-    return x.std() * np.sqrt((len(x) - 1.)/(len(x)))
+    return x.std() * np.sqrt((len(x) - 1.) / (len(x)))
+
 
 class DataLoaderS(object):
     # train and valid is the ratio of training set and validation set. test = 1 - train - valid
-    def __init__(self, file_name, train, valid, device, horizon, window, normalize=2):
+    def __init__(self, file_name, train, valid, device, horizon, window, normalize=2, num_nodes=None):
         self.P = window
         self.h = horizon
         fin = open(file_name)
         self.rawdat = np.loadtxt(fin, delimiter=',')
+        if num_nodes:
+            self.selected_nodes = np.random.choice(self.rawdat.shape[1], num_nodes, replace=False)
+        else:
+            self.selected_nodes = np.random.choice(self.rawdat.shape[1], self.rawdat.shape[1], replace=False)
+        self.selected_nodes.sort()
+        self.rawdat = self.rawdat[:, self.selected_nodes]
         self.dat = np.zeros(self.rawdat.shape)
         self.n, self.m = self.dat.shape
         self.normalize = 2
@@ -86,6 +96,7 @@ class DataLoaderS(object):
             yield Variable(X), Variable(Y)
             start_idx += batch_size
 
+
 class DataLoaderM(object):
     def __init__(self, xs, ys, batch_size, pad_with_last_sample=True):
         """
@@ -115,6 +126,7 @@ class DataLoaderM(object):
 
     def get_iterator(self):
         self.current_ind = 0
+
         def _wrapper():
             while self.current_ind < self.num_batch:
                 start_ind = self.batch_size * self.current_ind
@@ -126,15 +138,19 @@ class DataLoaderM(object):
 
         return _wrapper()
 
+
 class StandardScaler():
     """
     Standard the input
     """
+
     def __init__(self, mean, std):
         self.mean = mean
         self.std = std
+
     def transform(self, data):
         return (data - self.mean) / self.std
+
     def inverse_transform(self, data):
         return (data * self.std) + self.mean
 
@@ -148,14 +164,16 @@ def sym_adj(adj):
     d_mat_inv_sqrt = sp.diags(d_inv_sqrt)
     return adj.dot(d_mat_inv_sqrt).transpose().dot(d_mat_inv_sqrt).astype(np.float32).todense()
 
+
 def asym_adj(adj):
     """Asymmetrically normalize adjacency matrix."""
     adj = sp.coo_matrix(adj)
     rowsum = np.array(adj.sum(1)).flatten()
     d_inv = np.power(rowsum, -1).flatten()
     d_inv[np.isinf(d_inv)] = 0.
-    d_mat= sp.diags(d_inv)
+    d_mat = sp.diags(d_inv)
     return d_mat.dot(adj).astype(np.float32).todense()
+
 
 def calculate_normalized_laplacian(adj):
     """
@@ -171,6 +189,7 @@ def calculate_normalized_laplacian(adj):
     d_mat_inv_sqrt = sp.diags(d_inv_sqrt)
     normalized_laplacian = sp.eye(adj.shape[0]) - adj.dot(d_mat_inv_sqrt).transpose().dot(d_mat_inv_sqrt).tocoo()
     return normalized_laplacian
+
 
 def calculate_scaled_laplacian(adj_mx, lambda_max=2, undirected=True):
     if undirected:
@@ -198,12 +217,13 @@ def load_pickle(pickle_file):
         raise
     return pickle_data
 
+
 def load_adj(pkl_filename):
     sensor_ids, sensor_id_to_ind, adj = load_pickle(pkl_filename)
     return adj
 
 
-def load_dataset(dataset_dir, batch_size, valid_batch_size= None, test_batch_size=None):
+def load_dataset(dataset_dir, batch_size, valid_batch_size=None, test_batch_size=None):
     data = {}
     for category in ['train', 'val', 'test']:
         cat_data = np.load(os.path.join(dataset_dir, category + '.npz'))
@@ -221,19 +241,19 @@ def load_dataset(dataset_dir, batch_size, valid_batch_size= None, test_batch_siz
     return data
 
 
-
 def masked_mse(preds, labels, null_val=np.nan):
     if np.isnan(null_val):
         mask = ~torch.isnan(labels)
     else:
-        mask = (labels!=null_val)
+        mask = (labels != null_val)
     mask = mask.float()
     mask /= torch.mean((mask))
     mask = torch.where(torch.isnan(mask), torch.zeros_like(mask), mask)
-    loss = (preds-labels)**2
+    loss = (preds - labels) ** 2
     loss = loss * mask
     loss = torch.where(torch.isnan(loss), torch.zeros_like(loss), loss)
     return torch.mean(loss)
+
 
 def masked_rmse(preds, labels, null_val=np.nan):
     return torch.sqrt(masked_mse(preds=preds, labels=labels, null_val=null_val))
@@ -243,34 +263,35 @@ def masked_mae(preds, labels, null_val=np.nan):
     if np.isnan(null_val):
         mask = ~torch.isnan(labels)
     else:
-        mask = (labels!=null_val)
+        mask = (labels != null_val)
     mask = mask.float()
-    mask /=  torch.mean((mask))
+    mask /= torch.mean((mask))
     mask = torch.where(torch.isnan(mask), torch.zeros_like(mask), mask)
-    loss = torch.abs(preds-labels)
+    loss = torch.abs(preds - labels)
     loss = loss * mask
     loss = torch.where(torch.isnan(loss), torch.zeros_like(loss), loss)
     return torch.mean(loss)
+
 
 def masked_mape(preds, labels, null_val=np.nan):
     if np.isnan(null_val):
         mask = ~torch.isnan(labels)
     else:
-        mask = (labels!=null_val)
+        mask = (labels != null_val)
     mask = mask.float()
-    mask /=  torch.mean((mask))
+    mask /= torch.mean((mask))
     mask = torch.where(torch.isnan(mask), torch.zeros_like(mask), mask)
-    loss = torch.abs(preds-labels)/labels
+    loss = torch.abs(preds - labels) / labels
     loss = loss * mask
     loss = torch.where(torch.isnan(loss), torch.zeros_like(loss), loss)
     return torch.mean(loss)
 
 
 def metric(pred, real):
-    mae = masked_mae(pred,real,0.0).item()
-    mape = masked_mape(pred,real,0.0).item()
-    rmse = masked_rmse(pred,real,0.0).item()
-    return mae,mape,rmse
+    mae = masked_mae(pred, real, 0.0).item()
+    mape = masked_mape(pred, real, 0.0).item()
+    rmse = masked_rmse(pred, real, 0.0).item()
+    return mae, mape, rmse
 
 
 def load_node_feature(path):
@@ -282,9 +303,9 @@ def load_node_feature(path):
         e = [float(t) for t in li[1:]]
         x.append(e)
     x = np.array(x)
-    mean = np.mean(x,axis=0)
-    std = np.std(x,axis=0)
-    z = torch.tensor((x-mean)/std,dtype=torch.float)
+    mean = np.mean(x, axis=0)
+    std = np.std(x, axis=0)
+    z = torch.tensor((x - mean) / std, dtype=torch.float)
     return z
 
 
@@ -292,5 +313,38 @@ def normal_std(x):
     return x.std() * np.sqrt((len(x) - 1.) / (len(x)))
 
 
-
-            
+def get_single_default_args():
+    return easydict.EasyDict({
+        'data': './data/solar_AL.txt',
+        'log_interval': 2000,
+        'save': 'model/model.pt',
+        'optim': 'adam',
+        'L1Loss': True,
+        'normalize': 2,
+        'device': 'cuda',
+        'gcn_true': True,
+        'buildA_true': True,
+        'gcn_depth': 2,
+        'num_nodes': 137,
+        'dropout': 0.3,
+        'subgraph_size': 20,
+        'node_dim': 40,
+        'dilation_exponential': 2,
+        'conv_channels': 16,
+        'residual_channels': 16,
+        'skip_channels': 32,
+        'end_channels': 64,
+        'in_dim': 1,
+        'seq_in_len': 168,
+        'seq_out_len': 1,
+        'horizon': 3,
+        'layers': 5,
+        'batch_size': 32,
+        'lr': 0.0001,
+        'weight_decay': 1e-05,
+        'clip': 5,
+        'propalpha': 0.05,
+        'tanhalpha': 3,
+        'epochs': 1,
+        'num_split': 1,
+        'step_size': 100})

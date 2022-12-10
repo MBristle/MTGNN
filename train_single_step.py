@@ -11,6 +11,8 @@ import importlib
 from util import *
 from trainer import Optim
 
+import logging
+
 
 def evaluate(data, X, Y, model, evaluateL2, evaluateL1, batch_size, torch):
     model.eval()
@@ -55,7 +57,7 @@ def evaluate(data, X, Y, model, evaluateL2, evaluateL1, batch_size, torch):
     return rse, rae, correlation
 
 
-def train(data, X, Y, model, criterion, optim, batch_size, args, torch, device):
+def train(data, X, Y, model, criterion, optim, batch_size, args, torch, device,epoch):
     model.train()
     total_loss = 0
     n_samples = 0
@@ -87,13 +89,15 @@ def train(data, X, Y, model, criterion, optim, batch_size, args, torch, device):
             grad_norm = optim.step()
 
         if iter % 100 == 0:
-            print('iter:{:3d} | loss: {:.3f}'.format(iter, loss.item() / (output.size(0) * data.m)))
+            status = "{{'name': '{}', 'type': 'loss', 'horizon': {:3d}, 'num_nodes':{:3d}, 'epoch': {:3d}, 'iter': {:3d}, 'loss': {:.3f} }},".format(args.logger_name, args.horizon, args.num_nodes, epoch, iter, loss.item() / (output.size(0) * data.m))
+            logging.info( status)
+            print(status)
         iter += 1
     return total_loss / n_samples
 
 
 def batch_main(args, torch, device):
-    Data = DataLoaderS(args.data, 0.6, 0.2, device, args.horizon, args.seq_in_len, args.normalize)
+    Data = DataLoaderS(args.data, 0.6, 0.2, device, args.horizon, args.seq_in_len, args.normalize, args.num_nodes)
 
     model = gtnet(args.gcn_true, args.buildA_true, args.gcn_depth, args.num_nodes,
                   device, dropout=args.dropout, subgraph_size=args.subgraph_size,
@@ -127,24 +131,32 @@ def batch_main(args, torch, device):
         for epoch in range(1, args.epochs + 1):
             epoch_start_time = time.time()
             train_loss = train(Data, Data.train[0], Data.train[1], model, criterion, optim, args.batch_size, args,
-                               torch, device)
-            val_loss, val_rae, val_corr = evaluate(Data, Data.valid[0], Data.valid[1], model, evaluateL2, evaluateL1,
+                               torch, device, epoch)
+            train_rse, train_rae, train_corr = evaluate(Data, Data.train[0], Data.train[1], model, evaluateL2, evaluateL1,
                                                    args.batch_size,torch)
-            print(
-                '| end of epoch {:3d} | time: {:5.2f}s | train_loss {:5.4f} | valid rse {:5.4f} | valid rae {:5.4f} | valid corr  {:5.4f}'.format(
-                    epoch, (time.time() - epoch_start_time), train_loss, val_loss, val_rae, val_corr), flush=True)
+            status = "{{'name': '{}', 'type': 'train', 'horizon': {:3d}, 'num_nodes':{:3d}, 'epoch': {:3d}, 'time': {:5.2f}, 'train_loss': {:.3f}, 'train_rse': {:.3f}, 'train_rae': {:.3f}, 'train_corr': {:.3f} }},".format(
+                    args.logger_name, args.horizon, args.num_nodes, epoch, (time.time() - epoch_start_time), train_loss, train_rse, train_rae, train_corr)
+            logging.info(status)
+            print(status, flush=True)
+            val_rse, val_rae, val_corr = evaluate(Data, Data.valid[0], Data.valid[1], model, evaluateL2, evaluateL1,
+                                                   args.batch_size,torch)
+            status = "{{'name': '{}', 'type': 'valid', 'horizon': {:3d}, 'num_nodes':{:3d},'epoch': {:3d}, 'time': {:5.2f}, 'valid_rse': {:.3f}, 'valid_rae': {:.3f}, 'valid_corr': {:.3f}}},".format(
+                    args.logger_name, args.horizon, args.num_nodes, epoch, (time.time() - epoch_start_time), val_rse, val_rae, val_corr)
+            logging.info(status)
+            print(status, flush=True)
             # Save the model if the validation loss is the best we've seen so far.
-
-            if val_loss < best_val:
+            if val_rse < best_val:
                 with open(args.save, 'wb') as f:
                     torch.save(model, f)
-                best_val = val_loss
-            if epoch % 5 == 0:
-                test_acc, test_rae, test_corr = evaluate(Data, Data.test[0], Data.test[1], model, evaluateL2,
+                best_val = val_rse
+            if  epoch == 1 or epoch % 5 == 0 :
+                test_rse, test_rae, test_corr = evaluate(Data, Data.test[0], Data.test[1], model, evaluateL2,
                                                          evaluateL1,
                                                          args.batch_size,torch)
-                print("test rse {:5.4f} | test rae {:5.4f} | test corr {:5.4f}".format(test_acc, test_rae, test_corr),
-                      flush=True)
+                status = "{{'name': '{}', 'type': 'test', 'horizon': {:3d}, 'num_nodes':{:3d},'epoch': {:3d}, 'time': {:5.2f}, 'test_rse': {:.3f}, 'test_rae': {:.3f}, 'test_corr': {:.3f} }},".format(
+                    args.logger_name, args.horizon, args.num_nodes, epoch, (time.time() - epoch_start_time), test_rse, test_rae, test_corr)
+                logging.info(status)
+                print(status, flush=True)
 
     except KeyboardInterrupt:
         print('-' * 89)
@@ -156,20 +168,34 @@ def batch_main(args, torch, device):
 
     vtest_acc, vtest_rae, vtest_corr = evaluate(Data, Data.valid[0], Data.valid[1], model, evaluateL2, evaluateL1,
                                                 args.batch_size, torch)
+    status = "{{'name': '{}', 'type': 'final_valid', 'horizon': {:3d}, 'num_nodes':{:3d},'valid_rse': {:.3f}, 'valid_rae': {:.3f}, 'valid_corr': {:.3f}}},".format(
+        args.logger_name, args.horizon, args.num_nodes, vtest_acc, vtest_rae, vtest_corr)
+    logging.info(status)
     test_acc, test_rae, test_corr = evaluate(Data, Data.test[0], Data.test[1], model, evaluateL2, evaluateL1,
                                              args.batch_size, torch)
-    print("final test rse {:5.4f} | test rae {:5.4f} | test corr {:5.4f}".format(test_acc, test_rae, test_corr))
+    status = "{{'name': '{}', 'type': 'final_valid', 'horizon': {:3d}, 'num_nodes':{:3d}, 'test_rse': {:.3f}, 'test_rae': {:.3f}, 'test_corr': {:.3f} }},".format(
+        args.logger_name, args.horizon, args.num_nodes,  test_acc, test_rae, test_corr)
+    logging.info(status)
+    print(status)
     return vtest_acc, vtest_rae, vtest_corr, test_acc, test_rae, test_corr
 
 
 def main(args, torch, device):
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    handler = logging.FileHandler("./{}.log".format(args.logger_name), 'a', 'utf-8')
+    root_logger.addHandler(handler)
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        filename="./{}.log".format(args.logger_name),
+                        encoding='utf-8', level=logging.INFO)
     vacc = []
     vrae = []
     vcorr = []
     acc = []
     rae = []
     corr = []
-    for i in range(10):
+    for i in range(1):
         val_acc, val_rae, val_corr, test_acc, test_rae, test_corr = batch_main(args, torch, device)
         vacc.append(val_acc)
         vrae.append(val_rae)
@@ -178,7 +204,7 @@ def main(args, torch, device):
         rae.append(test_rae)
         corr.append(test_corr)
     print('\n\n')
-    print('10 runs average')
+    print('5 runs average')
     print('\n\n')
     print("valid\trse\trae\tcorr")
     print("mean\t{:5.4f}\t{:5.4f}\t{:5.4f}".format(np.mean(vacc), np.mean(vrae), np.mean(vcorr)))
@@ -231,6 +257,7 @@ if __name__ == "__main__":
     parser.add_argument('--epochs', type=int, default=1, help='')
     parser.add_argument('--num_split', type=int, default=1, help='number of splits for graphs')
     parser.add_argument('--step_size', type=int, default=100, help='step_size')
+    parser.add_argument('--logger_name', type=str, default='test_logger.log', help='logger_name')
 
     import os
 
