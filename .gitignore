@@ -7,3 +7,6 @@ venv*/
 *.npz
 *.h5
 
+models/
+logs/
+images/
